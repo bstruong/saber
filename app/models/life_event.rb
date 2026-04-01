@@ -1,0 +1,2 @@
+class LifeEvent < ApplicationRecord
+end

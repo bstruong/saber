@@ -1,0 +1,2 @@
+class TouchCadence < ApplicationRecord
+end

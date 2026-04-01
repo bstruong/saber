@@ -1,0 +1,30 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch("POSTGRES_USER") { ENV["USER"] } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "" } %>
+
+development:
+  <<: *default
+  database: assassin_development
+
+test:
+  <<: *default
+  database: assassin_test
+
+production:
+  primary: &primary_production
+    <<: *default
+    host: <%= ENV.fetch("POSTGRES_HOST") { "localhost" } %>
+    database: assassin_production
+    username: assassin
+    password: <%= ENV["ASSASSIN_DATABASE_PASSWORD"] %>
+  cache:
+    <<: *primary_production
+    database: assassin_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: assassin_production_queue
+    migrations_paths: db/queue_migrate
