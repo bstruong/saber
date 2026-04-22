@@ -1,2 +1,0 @@
-class TouchCadence < ApplicationRecord
-end

@@ -1,103 +1,93 @@
-# Sphere — Relationship Intelligence CRM
+# SABER
 
-A relationship-first CRM built in Ruby on Rails 8.1.
-
-Inspired by Ninja Selling philosophy and Ryan Serhant's 
-*Growing Your Sphere of Influence* — designed around relationship 
-depth and life events, not deal stages and pipelines.
+A personal relationship CRM built on Ryan Serhant's Sphere of Influence framework. SABER tracks your network, detects when relationships are drifting, and surfaces contextual prompts to reach out at the right moment.
 
 ---
 
-## The Problem
+## Tech Stack
 
-Existing real estate CRMs (Keller Williams Command, Lofty) are built 
-for transaction pipelines. They optimize for deal stages, volume 
-outreach, and branding.
+### Backend
+| | |
+|---|---|
+| **Runtime** | Ruby on Rails 8 — API mode |
+| **Database** | PostgreSQL 16 |
+| **Background jobs** | Sidekiq |
+| **Auth** | Devise — single user, registration disabled after setup |
+| **CORS** | rack-cors |
+| **Testing** | RSpec, FactoryBot, Shoulda Matchers, WebMock |
 
-Sphere is built for sphere-of-influence, referral-based relationship 
-management. The data model reflects a fundamentally different 
-philosophy — the absence of a deal stage field is a deliberate 
-design decision.
+### Frontend (`/client`)
+| | |
+|---|---|
+| **Framework** | Vite + React 19 + TypeScript |
+| **Styling** | Tailwind CSS v4 + shadcn/ui (Radix UI) |
+| **Routing** | React Router v7 — file-based |
+| **Server state** | TanStack Query v5 |
+| **Testing** | Vitest, React Testing Library, MSW v2, Playwright |
+
+### Deployment
+| | |
+|---|---|
+| **API** | Fly.io |
+| **Frontend** | TBD — evaluating Vercel, Fly.io, Cloudflare Pages |
+| **Alt (documented)** | GCP — Cloud Run + Cloud SQL |
 
 ---
 
-## Technical Stack
+## Architecture
 
-- Ruby 3.4 / Rails 8.1.3
-- PostgreSQL
-- Hotwire (Turbo Streams + Stimulus) — Rails-native frontend, no React
-- Sidekiq — background job processing for cadence recalculation
-- Tailwind CSS
-- RSpec
+Rails API and React frontend are deployed as separate services — the industry standard for teams running heterogeneous clients or independent release cadences. Rails runs in API-only mode with no views or asset pipeline. The React app talks to it over REST.
+
+**Why REST over GraphQL?** Single client, fixed views, small entity set. GraphQL's flexibility solves a problem this project doesn't have.
+
+**Why rule-based prompts over LLM?** Deterministic, fast, zero external dependencies, zero latency, zero cost. The core loop ships first; LLM experimentation comes after it's proven.
+
+**Why Fly.io over GCP as primary?** 30-minute setup vs 2–4 hours. $0–5/month vs $20–40/month. GCP is documented as a secondary deployment option for portfolio signal.
 
 ---
 
 ## Data Model
 
-Four core entities:
+Five tables: `persons`, `contact_methods`, `important_dates`, `interactions`, `reminders`.
 
-**Contact** — relationship stage (acquaintance / friend / advocate), 
-sphere category, touch history. No deal stage field — intentional.
-
-**Interaction** — append-only event log. Calls, coffee, dinners, 
-board games, housewarmings, handwritten notes, pop-bys. Enums stored 
-as strings for DB readability.
-
-**LifeEvent** — birthdays, job changes, new babies, anniversaries, 
-relocations. Time-anchored, not recurring — recurrence handled at 
-the query layer.
-
-**TouchCadence** — computed next touch date per contact. Updated by 
-an `after_create` callback on Interaction for MVP, migrating to a 
-Sidekiq background job as the next layer.
-
-String-backed enums throughout — readable directly in the DB, 
-easier to debug than integer-mapped enums in a domain this 
-relationship-focused.
-
----
-
-## The Non-Trivial Layer
-
-The cadence recalculation engine is what makes this non-trivial.
-
-A background job that dynamically recalculates next touch dates based 
-on relationship stage changes, interaction history, and life event 
-proximity.
-
-A contacts table with follow-up reminders is a todo list. A cadence 
-engine that stays accurate as relationships evolve over time is a 
-real scheduling and state management problem.
-
----
-
-## MVP — "Who needs my attention today"
-
-Dashboard that surfaces:
-- Contacts past their touch frequency threshold
-- Upcoming life events in the next 30 days
-
-One Hotwire interaction built correctly: inline touch logging without 
-a page reload via Turbo Frame + Turbo Stream. Contact slides off the 
-dashboard when cadence is satisfied.
+Each person has an SOI score (5–20) computed across five dimensions — ring, interaction frequency, value exchange, importance to goals, alignment with objectives. The score drives a contact cadence (14–180 days). A daily Sidekiq job detects drift and creates reminders with rule-based prompt text when a relationship goes overdue.
 
 ---
 
 ## Running Locally
 
-Prerequisites: Ruby 3.3+, PostgreSQL, Redis
+**Prerequisites:** Ruby 3.4+, PostgreSQL 16, Redis
+
 ```bash
-git clone git@github.com:bstruong/assassin.git
-cd assassin
+git clone git@github.com:bstruong/saber.git
+cd saber
 bundle install
-rails db:create db:migrate
+rails db:create db:migrate db:seed
 bin/dev
 ```
+
+API available at `http://localhost:3000`.
+
+Frontend (separate):
+```bash
+cd client
+npm install
+npm run dev
+```
+
+UI available at `http://localhost:5173`.
 
 ---
 
 ## Status
 
-Active development. Sprint 1 target: April 2026 SF Ruby Meetup.
-
-Next: Sidekiq cadence recalculation engine.
+| Milestone | Description | Status |
+|---|---|---|
+| M1 | Rails API foundation — schema, models, auth, testing setup | In progress |
+| M2 | Core API endpoints — contacts CRUD, SOI score, cadence | Planned |
+| M3 | Dashboard API — drift detection, reminders, prompt generation | Planned |
+| M4 | Interactions API | Planned |
+| M5 | React frontend foundation | Planned |
+| M6 | Dashboard UI | Planned |
+| M7–M9 | Contact list, detail, and form UIs | Planned |
+| M10 | Production deployment — Fly.io + Vercel | Planned |

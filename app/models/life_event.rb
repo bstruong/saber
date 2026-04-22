@@ -1,2 +1,0 @@
-class LifeEvent < ApplicationRecord
-end
