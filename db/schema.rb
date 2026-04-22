@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_22_205624) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_22_220657) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,15 +48,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_205624) do
     t.integer "cadence_override_days"
     t.datetime "created_at", null: false
     t.string "cultural_tags", default: [], array: true
+    t.datetime "deleted_at"
+    t.integer "importance_score"
     t.datetime "last_contacted_at"
     t.string "name", null: false
     t.text "needs"
     t.text "notes"
+    t.integer "objective_alignment_score"
     t.string "relationship_tags", default: [], array: true
     t.string "ring", null: false
     t.string "score_source", default: "computed", null: false
     t.integer "soi_score"
     t.datetime "updated_at", null: false
+    t.integer "value_exchange_score"
+    t.index ["deleted_at"], name: "index_people_on_deleted_at"
   end
 
   create_table "reminders", force: :cascade do |t|
