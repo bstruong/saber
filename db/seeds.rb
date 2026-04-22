@@ -1,9 +1,19 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+User.find_or_create_by!(email: "brian@example.com") do |u|
+  u.password = "password123"
+end
+
+alex = Person.find_or_create_by!(name: "Alex Chen") do |p|
+  p.ring              = :network
+  p.notes             = "Met at SF Ruby meetup. Works on distributed systems at Stripe. Thoughtful, low-ego, always has interesting takes."
+  p.needs             = "Looking for angel investors for his next venture. Can offer deep infra advice and warm intros to eng leadership."
+  p.soi_score         = 14
+  p.score_source      = :computed
+  p.cadence_days      = 30
+  p.last_contacted_at = 6.weeks.ago
+  p.relationship_tags = [ "colleague", "mentor" ]
+end
+
+alex.contact_methods.find_or_create_by!(method_type: :linkedin, value: "linkedin.com/in/alexchen")
+alex.contact_methods.find_or_create_by!(method_type: :email,    value: "alex@example.com")
+
+alex.important_dates.find_or_create_by!(name: "Birthday", month: 6, day: 15)
