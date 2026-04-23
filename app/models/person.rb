@@ -17,8 +17,27 @@ class Person < ApplicationRecord
     manual:   "manual"
   }
 
+  UPCOMING_DAYS_WINDOW = 30
+
   scope :active,  -> { where(deleted_at: nil) }
   scope :deleted, -> { where.not(deleted_at: nil) }
+
+  scope :with_upcoming_events, -> {
+    today = Date.today
+    upcoming = (today...(today + UPCOMING_DAYS_WINDOW)).map { |d| [ d.month, d.day ] }
+    placeholders = upcoming.map { "(?, ?)" }.join(", ")
+    joins(:important_dates)
+      .where("(important_dates.month, important_dates.day) IN (#{placeholders})", *upcoming.flatten)
+      .distinct
+  }
+
+  scope :needs_reconnection, -> {
+    where(
+      "last_contacted_at IS NULL OR (" \
+      "COALESCE(cadence_override_days, cadence_days) IS NOT NULL AND " \
+      "last_contacted_at + (COALESCE(cadence_override_days, cadence_days) || ' days')::interval < NOW())"
+    )
+  }
 
   validates :name,  presence: true
   validates :ring,  presence: true

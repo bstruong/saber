@@ -40,6 +40,14 @@ effortless, not obligatory.
 
 ---
 
+## Coding Standards
+
+See detailed guidelines in:
+- [`.claude/security.md`](.claude/security.md) — SQL injection prevention
+- [`.claude/performance.md`](.claude/performance.md) — N+1 query prevention
+
+---
+
 ## Design System
 
 Primary: Sapphire `#0F52BA`

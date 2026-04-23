@@ -4,6 +4,9 @@ module Api
 
     def index
       persons = Person.active
+      persons = persons.where(ring: params[:ring]) if params[:ring].present?
+      persons = persons.with_upcoming_events       if params[:upcoming_events] == "true"
+      persons = persons.needs_reconnection         if params[:needs_reconnection] == "true"
       render json: persons
     end
 
@@ -16,7 +19,7 @@ module Api
       if person.save
         render json: person, status: :created
       else
-        render json: { errors: person.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: person.errors.full_messages }, status: :unprocessable_content
       end
     end
 
@@ -24,7 +27,7 @@ module Api
       if @person.update(person_params)
         render json: @person
       else
-        render json: { errors: @person.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: @person.errors.full_messages }, status: :unprocessable_content
       end
     end
 
