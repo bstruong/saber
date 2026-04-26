@@ -35,10 +35,4 @@ RSpec.describe "Api::ImportantDates", type: :request do
       expect { important_date.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
-
-  private
-
-  def json_body
-    JSON.parse(response.body)
-  end
 end

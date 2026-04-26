@@ -35,10 +35,4 @@ RSpec.describe "Api::ContactMethods", type: :request do
       expect { contact_method.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
-
-  private
-
-  def json_body
-    JSON.parse(response.body)
-  end
 end

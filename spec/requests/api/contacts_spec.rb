@@ -60,10 +60,10 @@ RSpec.describe "Api::Contacts", type: :request do
     let(:valid_params) do
       {
         person: {
-          name: "Jamie Doe",
-          ring: "network",
-          importance_score: 3,
-          value_exchange_score: 2,
+          name:                      "Jamie Doe",
+          ring:                      "network",
+          importance_score:          3,
+          value_exchange_score:      2,
           objective_alignment_score: 2
         }
       }
@@ -96,11 +96,5 @@ RSpec.describe "Api::Contacts", type: :request do
       expect(response).to have_http_status(:no_content)
       expect(person.reload.deleted_at).to be_present
     end
-  end
-
-  private
-
-  def json_body
-    JSON.parse(response.body)
   end
 end

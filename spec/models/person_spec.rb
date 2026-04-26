@@ -59,18 +59,17 @@ RSpec.describe Person, type: :model do
       )
     end
 
-    it "computes soi_score from all 5 dimensions" do
-      expect(person.soi_score).to eq(
-        person.importance_score +
-        person.ring_score +
-        person.value_exchange_score +
-        person.interaction_frequency_score +
-        person.objective_alignment_score
-      )
+    it "sets soi_score on save" do
+      expect(person.soi_score).to eq(13) # 3+3+3+1(no interactions)+3
     end
 
-    it "sets cadence_days from CADENCE_MAP" do
-      expect(person.cadence_days).to be_present
+    it "sets cadence_days from soi_score" do
+      expect(person.cadence_days).to eq(30)
+    end
+
+    it "recomputes when a score dimension changes" do
+      expect { person.update!(ring: :board_of_advisors) }
+        .to change { person.reload.soi_score }.from(13).to(14)
     end
 
     it "does not recompute when score_source is manual" do
