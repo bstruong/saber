@@ -13,7 +13,7 @@ class PromptGenerator
     ]
   }.freeze
 
-  def initalize(person, cultural_dates: CULTURAL_DATES)
+  def initialize(person, cultural_dates: CULTURAL_DATES)
     @person         = person
     @today          = Date.today
     @cultural_dates = cultural_dates
@@ -34,7 +34,7 @@ class PromptGenerator
     @first_name ||= @person.name.split.first
   end
 
-  def days_until(month_day)
+  def days_until(month, day)
     target = Date.new(@today.year, month, day)
     target = Date.new(@today.year + 1, month, day) if target < @today
     (target - @today).to_i
@@ -75,7 +75,7 @@ class PromptGenerator
   #   days_to_first  = (SUNDAY(0) - 5) % 7 = (-5) % 7 = 2
   #   first Sunday   = May 1 + 2 = May 3
   #   second Sunday  = May 3 + 7 = May 10
-  def nth_weekday_of_month(year, month, weekday, occurence)
+  def nth_weekday_of_month(year, month, weekday, occurrence)
     first_of_month = Date.new(year, month, 1)
     days_to_first = (weekday - first_of_month.wday) % DAYS_IN_WEEK
     first_of_month + days_to_first + ((occurrence - 1) * DAYS_IN_WEEK)
@@ -89,7 +89,7 @@ class PromptGenerator
         date = nth_weekday_of_month(@today.year, h.month, h.weekday, h.occurrence)
         date = nth_weekday_of_month(@today.year + 1, h.month, h.weekday, h.occurrence) if date < @today
         days = (date - @today).to_i
-        return [ h, days ] if days.between?(O, WINDOW)
+        return [ h, days ] if days.between?(0, WINDOW)
       end
     end
 

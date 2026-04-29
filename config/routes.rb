@@ -6,5 +6,15 @@ Rails.application.routes.draw do
       resources :contact_methods, only: [ :create, :destroy ]
       resources :important_dates,  only: [ :create, :destroy ]
     end
+
+    resources :reminders, only: [] do
+      member do
+        post :dismiss
+        post :snooze
+      end
+    end
+
+    get "dashboard/reconnect", to: "dashboard#reconnect"
+    get "dashboard/upcoming",  to: "dashboard#upcoming"
   end
 end
