@@ -5,11 +5,11 @@ class Person < ApplicationRecord
   has_many :reminders,       dependent: :destroy
 
   enum :ring, {
-    board_of_advisors: "board_of_advisors",
-    network:           "network",
-    community:         "community",
-    audience:          "audience",
-    stranger:          "stranger"
+    inner_circle:  "inner_circle",
+    network:       "network",
+    community:     "community",
+    acquaintances: "acquaintances",
+    stranger:      "stranger"
   }
 
   enum :score_source, {
@@ -18,7 +18,7 @@ class Person < ApplicationRecord
   }
 
   UPCOMING_DAYS_WINDOW = 30
-  SCORE_DIMENSIONS = %i[ring importance_score value_exchange_score objective_alignment_score].freeze
+  SCORE_DIMENSIONS = %i[ring importance_score reciprocity_score shared_values_score].freeze
 
   scope :active,  -> { where(deleted_at: nil) }
   scope :deleted, -> { where.not(deleted_at: nil) }
@@ -34,16 +34,16 @@ class Person < ApplicationRecord
 
   scope :needs_reconnection, -> {
     where(
-      "last_contacted_at IS NULL OR (" \
+      "last_connected_at IS NULL OR (" \
       "COALESCE(cadence_override_days, cadence_days) IS NOT NULL AND " \
-      "last_contacted_at + (COALESCE(cadence_override_days, cadence_days) || ' days')::interval < NOW())"
+      "last_connected_at + (COALESCE(cadence_override_days, cadence_days) || ' days')::interval < NOW())"
     )
   }
 
   validates :name,  presence: true
   validates :ring,  presence: true
 
-  before_save :compute_soi_score, if: :should_compute_score?
+  before_save :compute_connection_score, if: :should_compute_score?
 
   def soft_delete
     update!(deleted_at: Time.current)
@@ -60,9 +60,9 @@ class Person < ApplicationRecord
     computed? && SCORE_DIMENSIONS.any? { |a| will_save_change_to_attribute?(a) }
   end
 
-  def compute_soi_score
-    calc = SoiScoreCalculator.new(self)
-    self.soi_score    = calc.score
-    self.cadence_days = calc.cadence_days
+  def compute_connection_score
+    calc = ConnectionScoreCalculator.new(self)
+    self.connection_score = calc.score
+    self.cadence_days     = calc.cadence_days
   end
 end

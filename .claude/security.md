@@ -24,7 +24,7 @@ where(ring: params[:ring])
 where("(important_dates.month, important_dates.day) IN (#{placeholders})", *upcoming.flatten)
 
 # OK — no values, just column names and SQL functions
-where("last_contacted_at IS NULL OR last_contacted_at + ... < NOW()")
+where("last_connected_at IS NULL OR last_connected_at + ... < NOW()")
 ```
 
 When writing raw SQL, add a comment confirming no user input touches the string so the next reader doesn't have to re-audit it.

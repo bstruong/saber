@@ -6,10 +6,10 @@ alex = Person.find_or_create_by!(name: "Alex Chen") do |p|
   p.ring              = :network
   p.notes             = "Met at SF Ruby meetup. Works on distributed systems at Stripe. Thoughtful, low-ego, always has interesting takes."
   p.needs             = "Looking for angel investors for his next venture. Can offer deep infra advice and warm intros to eng leadership."
-  p.soi_score         = 14
+  p.connection_score  = 14
   p.score_source      = :computed
   p.cadence_days      = 30
-  p.last_contacted_at = 6.weeks.ago
+  p.last_connected_at = 6.weeks.ago
   p.relationship_tags = [ "colleague", "mentor" ]
 end
 

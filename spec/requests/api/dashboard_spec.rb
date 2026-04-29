@@ -39,7 +39,7 @@ RSpec.describe "Api::Dashboard", type: :request do
       person = create(:person, name: "Sam Lee", ring: :network)
       create(:reminder, person: person)
       get "/api/dashboard/reconnect"
-      expect(json_body.first["person"].keys).to match_array(%w[id name ring last_contacted_at])
+      expect(json_body.first["person"].keys).to match_array(%w[id name ring last_connected_at])
     end
   end
 
@@ -59,7 +59,7 @@ RSpec.describe "Api::Dashboard", type: :request do
       create(:important_date, person: person, name: "Birthday", month: 7, day: 20)
       get "/api/dashboard/upcoming"
       entry = json_body.first
-      expect(entry["person"].keys).to match_array(%w[id name ring last_contacted_at])
+      expect(entry["person"].keys).to match_array(%w[id name ring last_connected_at])
       expect(entry["upcoming_dates"].first).to include(
         "name" => "Birthday", "month" => 7, "day" => 20, "days_until" => 5
       )

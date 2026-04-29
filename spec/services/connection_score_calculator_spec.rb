@@ -1,36 +1,36 @@
 require "rails_helper"
 
-RSpec.describe SoiScoreCalculator do
+RSpec.describe ConnectionScoreCalculator do
   def baseline_person(**overrides)
     create(:person,
-      ring:                      :stranger,
-      score_source:              :manual,
-      importance_score:          1,
-      value_exchange_score:      1,
-      objective_alignment_score: 1,
+      ring:                 :stranger,
+      score_source:         :manual,
+      importance_score:     1,
+      reciprocity_score:    1,
+      shared_values_score:  1,
       **overrides
     )
   end
 
   describe "#score" do
     it "sums all 5 dimensions" do
-      person = baseline_person(ring: :network, importance_score: 3, value_exchange_score: 3, objective_alignment_score: 3)
-      # importance=3, ring=3, value_exchange=3, interaction_frequency=1, objective=3
+      person = baseline_person(ring: :network, importance_score: 3, reciprocity_score: 3, shared_values_score: 3)
+      # importance=3, ring=3, reciprocity=3, interaction_frequency=1, shared_values=3
       expect(described_class.new(person).score).to eq(13)
     end
 
     it "defaults nil dimension scores to 1" do
-      person = create(:person, score_source: :manual, importance_score: nil, value_exchange_score: nil, objective_alignment_score: nil)
+      person = create(:person, score_source: :manual, importance_score: nil, reciprocity_score: nil, shared_values_score: nil)
       expect(described_class.new(person).score).to be >= 5
     end
 
     it "applies correct ring scores" do
       {
-        board_of_advisors: 4,
-        network:           3,
-        community:         2,
-        audience:          1,
-        stranger:          1
+        inner_circle:  4,
+        network:       3,
+        community:     2,
+        acquaintances: 1,
+        stranger:      1
       }.each do |ring, ring_score|
         person = baseline_person(ring: ring)
         expect(described_class.new(person).score).to eq(4 + ring_score), "#{ring} should contribute #{ring_score}"
@@ -38,7 +38,7 @@ RSpec.describe SoiScoreCalculator do
     end
 
     context "interaction frequency" do
-      let(:person) { baseline_person } # base without dim4 = 4, so score = 4 + dim4
+      let(:person) { baseline_person } # base without interaction_frequency = 4, so score = 4 + interaction_frequency
 
       it "scores 1 for no recent interactions" do
         expect(described_class.new(person).score).to eq(5)
@@ -68,19 +68,19 @@ RSpec.describe SoiScoreCalculator do
 
   describe "#cadence_days" do
     it "returns 14 days for score 17-20" do
-      person = baseline_person(ring: :board_of_advisors, importance_score: 4, value_exchange_score: 4, objective_alignment_score: 4)
+      person = baseline_person(ring: :inner_circle, importance_score: 4, reciprocity_score: 4, shared_values_score: 4)
       # 4+4+4+1+4 = 17
       expect(described_class.new(person).cadence_days).to eq(14)
     end
 
     it "returns 30 days for score 13-16" do
-      person = baseline_person(ring: :network, importance_score: 3, value_exchange_score: 3, objective_alignment_score: 3)
+      person = baseline_person(ring: :network, importance_score: 3, reciprocity_score: 3, shared_values_score: 3)
       # 3+3+3+1+3 = 13
       expect(described_class.new(person).cadence_days).to eq(30)
     end
 
     it "returns 90 days for score 9-12" do
-      person = baseline_person(ring: :community, importance_score: 2, value_exchange_score: 2, objective_alignment_score: 2)
+      person = baseline_person(ring: :community, importance_score: 2, reciprocity_score: 2, shared_values_score: 2)
       # 2+2+2+1+2 = 9
       expect(described_class.new(person).cadence_days).to eq(90)
     end

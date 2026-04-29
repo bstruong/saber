@@ -1,6 +1,6 @@
 module Api
   class DashboardController < BaseController
-    PERSON_FIELDS = %i[id name ring last_contacted_at].freeze
+    PERSON_FIELDS = %i[id name ring last_connected_at].freeze
 
     def reconnect
       reminders = Reminder.active.not_snoozed.order(:due_at).includes(:person)

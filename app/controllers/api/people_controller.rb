@@ -1,5 +1,5 @@
 module Api
-  class ContactsController < BaseController
+  class PeopleController < BaseController
     before_action :set_person, only: [ :show, :update, :destroy ]
 
     def index
@@ -48,13 +48,13 @@ module Api
         :ring,
         :notes,
         :needs,
-        :soi_score,
+        :connection_score,
         :score_source,
         :cadence_override_days,
-        :last_contacted_at,
+        :last_connected_at,
         :importance_score,
-        :value_exchange_score,
-        :objective_alignment_score,
+        :reciprocity_score,
+        :shared_values_score,
         relationship_tags: [],
         cultural_tags:     []
       )

@@ -1,6 +1,6 @@
 # SABER
 
-A personal relationship CRM built on Ryan Serhant's Sphere of Influence framework. SABER tracks your network, detects when relationships are drifting, and surfaces contextual prompts to reach out at the right moment.
+A personal tool for tending the relationships that matter. Inspired by Ryan Serhant's Sphere of Influence framework and Larry Kendall's Ninja Selling, SABER tracks the people in your life, notices when a connection is drifting, and surfaces a thoughtful nudge to reach out at the right moment.
 
 ---
 
@@ -50,7 +50,7 @@ Rails API and React frontend are deployed as separate services — the industry 
 
 Five tables: `persons`, `contact_methods`, `important_dates`, `interactions`, `reminders`.
 
-Each person has an SOI score (5–20) computed across five dimensions — ring, interaction frequency, value exchange, importance to goals, alignment with objectives. The score drives a contact cadence (14–180 days). A daily Sidekiq job detects drift and creates reminders with rule-based prompt text when a relationship goes overdue.
+Each person has a connection score (5–20) computed across five dimensions — ring (how close), interaction frequency, reciprocity (mutual support), personal importance, and shared values. The score sets a connection cadence (14–180 days). A daily Sidekiq job notices when a relationship has gone quiet and creates a reminder with rule-based prompt text — a small, contextual nudge to reconnect.
 
 ---
 
@@ -84,7 +84,7 @@ UI available at `http://localhost:5173`.
 | Milestone | Description | Status |
 |---|---|---|
 | M1 | Rails API foundation — schema, models, auth, testing setup | In progress |
-| M2 | Core API endpoints — contacts CRUD, SOI score, cadence | Planned |
+| M2 | Core API endpoints — people CRUD, connection score, cadence | Planned |
 | M3 | Dashboard API — drift detection, reminders, prompt generation | Planned |
 | M4 | Interactions API | Planned |
 | M5 | React frontend foundation | Planned |

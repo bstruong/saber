@@ -20,7 +20,7 @@ module Api
     private
 
     def set_person
-      @person = Person.active.find(params[:contact_id])
+      @person = Person.active.find(params[:person_id])
     end
 
     def contact_method_params

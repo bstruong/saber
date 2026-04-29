@@ -81,53 +81,53 @@ RSpec.describe Person, type: :model do
     let(:person) { create(:person) }
 
     it "includes persons never contacted" do
-      person.update_columns(last_contacted_at: nil, cadence_days: 30)
+      person.update_columns(last_connected_at: nil, cadence_days: 30)
       expect(Person.needs_reconnection).to include(person)
     end
 
     it "includes persons overdue based on cadence" do
-      person.update_columns(last_contacted_at: 100.days.ago, cadence_days: 30)
+      person.update_columns(last_connected_at: 100.days.ago, cadence_days: 30)
       expect(Person.needs_reconnection).to include(person)
     end
 
     it "excludes persons contacted within their cadence" do
-      person.update_columns(last_contacted_at: 10.days.ago, cadence_days: 30)
+      person.update_columns(last_connected_at: 10.days.ago, cadence_days: 30)
       expect(Person.needs_reconnection).not_to include(person)
     end
 
     it "uses cadence_override_days when set" do
-      person.update_columns(last_contacted_at: 10.days.ago, cadence_days: 30, cadence_override_days: 7)
+      person.update_columns(last_connected_at: 10.days.ago, cadence_days: 30, cadence_override_days: 7)
       expect(Person.needs_reconnection).to include(person)
     end
   end
 
-  describe "#compute_soi_score" do
+  describe "#compute_connection_score" do
     let(:person) do
       create(:person,
-        ring:                      :network,
-        importance_score:          3,
-        value_exchange_score:      3,
-        objective_alignment_score: 3
+        ring:                :network,
+        importance_score:    3,
+        reciprocity_score:   3,
+        shared_values_score: 3
       )
     end
 
-    it "sets soi_score on save" do
-      expect(person.soi_score).to eq(13) # 3+3+3+1(no interactions)+3
+    it "sets connection_score on save" do
+      expect(person.connection_score).to eq(13) # 3+3+3+1(no interactions)+3
     end
 
-    it "sets cadence_days from soi_score" do
+    it "sets cadence_days from connection_score" do
       expect(person.cadence_days).to eq(30)
     end
 
     it "recomputes when a score dimension changes" do
-      expect { person.update!(ring: :board_of_advisors) }
-        .to change { person.reload.soi_score }.from(13).to(14)
+      expect { person.update!(ring: :inner_circle) }
+        .to change { person.reload.connection_score }.from(13).to(14)
     end
 
     it "does not recompute when score_source is manual" do
-      person.update!(score_source: :manual, soi_score: 99)
+      person.update!(score_source: :manual, connection_score: 99)
       person.update!(ring: :community)
-      expect(person.reload.soi_score).to eq(99)
+      expect(person.reload.connection_score).to eq(99)
     end
   end
 end

@@ -23,17 +23,17 @@ Each stage maps to a concrete system component:
 | Track | Person + ContactMethod + ImportantDate records |
 | Detect Drift | DriftDetectionJob (Sidekiq, daily) |
 | Prompt Outreach | Rule-based PromptGenerator + Reminder records |
-| Log Interaction | Interaction POST → updates last_contacted_at + dismisses Reminder |
+| Log Interaction | Interaction POST → updates last_connected_at + dismisses Reminder |
 
 ### Storage layers
 
 Five tables: `persons`, `contact_methods`, `important_dates`,
 `interactions`, `reminders`
 
-- `persons` — core record. Holds ring, SOI score, cadence, last_contacted_at
+- `persons` — core record. Holds ring, connection score, cadence, last_connected_at
 - `contact_methods` — polymorphic contact info, at least one required per person
 - `important_dates` — month/day pairs for birthdays, anniversaries, etc.
-- `interactions` — append-only. POST is the only write path that updates last_contacted_at
+- `interactions` — append-only. POST is the only write path that updates last_connected_at
 - `reminders` — dismissed_at nil = active. Never hard-deleted
 
 ### Locked Architectural Principles
@@ -43,13 +43,13 @@ Five tables: `persons`, `contact_methods`, `important_dates`,
   elevates SABER beyond a CRUD app.
 - **Effective cadence computed in one place.** cadence_override_days takes
   precedence over cadence_days. No caller computes this inline.
-- **last_contacted_at is the single source of truth.** Interaction POST is
+- **last_connected_at is the single source of truth.** Interaction POST is
   the only write path that updates it. Nothing else touches it.
 - **Reminders are dismissed, never deleted.** dismissed_at.nil? = active.
   Append-only audit trail.
 - **Rule-based prompt generation only.** No LLM in core logic. Deterministic,
   fast, no dependencies.
-- **SOI score computation lives in a service object, not the model.** Models
+- **connection score computation lives in a service object, not the model.** Models
   are persistence only.
 - **Single user.** Devise with registration disabled after setup. No
   multi-tenancy, no roles.
@@ -87,10 +87,10 @@ Five tables: `persons`, `contact_methods`, `important_dates`,
 - ActiveRecord is persistence only. Business logic lives in service objects.
 - Effective cadence: `cadence_override_days || cadence_days`. Computed once,
   in one place, never inline by callers.
-- SOI score range: 5–20. Score → cadence mapping lives in a single
+- connection score range: 5–20. Score → cadence mapping lives in a single
   authoritative location (service or constant), never duplicated.
 - Reminder active check: `dismissed_at.nil?`. No scope that diverges from this.
-- Interaction POST has two side effects: update last_contacted_at on person,
+- Interaction POST has two side effects: update last_connected_at on person,
   dismiss active reminder. Both happen in the same service call.
 - DriftDetectionJob is idempotent. Never creates a duplicate active reminder
   for the same person.
@@ -175,7 +175,7 @@ end
 
 ### Project specifics
 
-- String-backed enums everywhere. `enum :ring, { board_of_advisors: "board_of_advisors", ... }, validate: true`
+- String-backed enums everywhere. `enum :ring, { inner_circle: "inner_circle", ... }, validate: true`
 - ActiveRecord is persistence only. No business logic in models beyond
   validations, associations, and simple scopes.
 - RSpec + FactoryBot + Shoulda Matchers + Webmock. No other test dependencies.
@@ -234,7 +234,7 @@ If no idiom applies, skip the comment.
 
 - M2 — Core API endpoints
   - Contacts CRUD, contact methods, important dates
-  - SOI score computation on save
+  - connection score computation on save
   - Cadence derivation from score
   - Request specs
 
@@ -247,7 +247,7 @@ If no idiom applies, skip the comment.
 
 - M4 — Interactions API
   - Interactions CRUD
-  - POST side effects: last_contacted_at + reminder dismissal
+  - POST side effects: last_connected_at + reminder dismissal
   - Side effect specs
 
 ### Phase 2 — Frontend (M5–M9)

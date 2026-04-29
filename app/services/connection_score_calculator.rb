@@ -1,10 +1,10 @@
-class SoiScoreCalculator
+class ConnectionScoreCalculator
   RING_SCORE = {
-    "board_of_advisors" => 4,
-    "network" => 3,
-    "community" => 2,
-    "audience" => 1,
-    "stranger" => 1
+    "inner_circle"  => 4,
+    "network"       => 3,
+    "community"     => 2,
+    "acquaintances" => 1,
+    "stranger"      => 1
   }.freeze
 
   TWO_WEEKS = 14
@@ -17,7 +17,7 @@ class SoiScoreCalculator
   end
 
   def score
-    importance + ring_score + value_exchange + interaction_frequency + objective_alignment
+    importance + ring_score + reciprocity + interaction_frequency + shared_values
   end
 
   def cadence_days
@@ -31,9 +31,9 @@ class SoiScoreCalculator
 
   private
 
-  def importance          = @person.importance_score          || 1
-  def value_exchange      = @person.value_exchange_score      || 1
-  def objective_alignment = @person.objective_alignment_score || 1
+  def importance    = @person.importance_score    || 1
+  def reciprocity   = @person.reciprocity_score   || 1
+  def shared_values = @person.shared_values_score || 1
 
   def ring_score
     RING_SCORE[@person.ring] || 1
