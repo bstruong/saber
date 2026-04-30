@@ -1,6 +1,6 @@
-# SABER
+# Personal Relationship Manager: Rails 8 API + React 19
 
-A personal tool for tending the relationships that matter. Inspired by Ryan Serhant's Sphere of Influence framework and Larry Kendall's Ninja Selling, SABER tracks the people in your life, notices when a connection is drifting, and surfaces a thoughtful nudge to reach out at the right moment.
+A personal tool for tending the relationships that matter. Connection scoring and cadence-driven follow-ups for the people you want to stay in touch with.
 
 ---
 
