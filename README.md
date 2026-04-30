@@ -1,6 +1,6 @@
 # Personal Relationship Manager: Rails 8 API + React 19
 
-A personal tool for tending the relationships that matter. Connection scoring and cadence-driven follow-ups for the people you want to stay in touch with.
+A personal tool for tending the relationships that matter. Records the people you know, your interactions with them, the life events that shape those relationships, and how long it has been since you last connected.
 
 ---
 
