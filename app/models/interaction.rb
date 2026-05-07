@@ -1,6 +1,9 @@
 class Interaction < ApplicationRecord
   belongs_to :person
 
+  scope :active, -> { where(voided_at: nil) }
+  scope :voided, -> { where.not(voided_at: nil) }
+
   enum :interaction_type, {
     coffee: "coffee",
     lunch:  "lunch",

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_28_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_054907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,7 +40,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_220000) do
     t.date "occurred_at", null: false
     t.bigint "person_id", null: false
     t.datetime "updated_at", null: false
+    t.datetime "voided_at"
     t.index ["person_id"], name: "index_interactions_on_person_id"
+    t.index ["voided_at"], name: "index_interactions_on_voided_at"
   end
 
   create_table "people", force: :cascade do |t|

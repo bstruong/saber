@@ -5,6 +5,11 @@ Rails.application.routes.draw do
     resources :people, only: [ :index, :show, :create, :update, :destroy ] do
       resources :contact_methods, only: [ :create, :destroy ]
       resources :important_dates, only: [ :create, :destroy ]
+      resources :interactions,    only: [ :index, :show, :create ] do
+        member do
+          post :void
+        end
+      end
     end
 
     resources :reminders, only: [] do
