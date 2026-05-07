@@ -83,10 +83,10 @@ UI available at `http://localhost:5173`.
 
 | Milestone | Description | Status |
 |---|---|---|
-| M1 | Rails API foundation — schema, models, auth, testing setup | In progress |
-| M2 | Core API endpoints — people CRUD, connection score, cadence | Planned |
-| M3 | Dashboard API — drift detection, reminders, prompt generation | Planned |
-| M4 | Interactions API | Planned |
+| M1 | Rails API foundation — schema, models, auth, testing setup | Done |
+| M2 | Core API endpoints — people CRUD, connection score, cadence | Done |
+| M3 | Dashboard API — drift detection, reminders, prompt generation | Done |
+| M4 | Interactions API — append-only with side-effect coordination | Done |
 | M5 | React frontend foundation | Planned |
 | M6 | Dashboard UI | Planned |
 | M7–M9 | Contact list, detail, and form UIs | Planned |

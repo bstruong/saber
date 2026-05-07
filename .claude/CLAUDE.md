@@ -216,43 +216,25 @@ If no idiom applies, skip the comment.
 
 ## CURRENT PHASE
 
-### Phase 1 — Backend Foundation (M1–M4)
+### Phase 1 — Backend Foundation (M1–M4) — DONE
 
-- **M1.0 — Rename + scaffold audit** ← ACTIVE
-  - Rename project from ASSASSIN → SABER (all occurrences)
-  - Audit scaffold against M1 requirements
-  - Surface gaps, confirm next step before proceeding
-
-- M1.1 — Schema + models
-  - All 5 migrations
-  - Models with validations, associations, string-backed enums
-
-- M1.2 — Devise + seeds + RSpec setup
-  - Single user, registration disabled
-  - One realistic seed contact
-  - RSpec + FactoryBot baseline
-
-- M2 — Core API endpoints
-  - Contacts CRUD, contact methods, important dates
-  - connection score computation on save
-  - Cadence derivation from score
-  - Request specs
-
-- M3 — Dashboard API + drift detection ← second demoable checkpoint
-  - DriftDetectionJob (Sidekiq, daily, idempotent)
-  - Rule-based PromptGenerator
-  - GET /api/dashboard/reconnect + /upcoming
-  - Reminder dismiss + snooze endpoints
-  - Unit specs: score, cadence, prompt, snooze
-
-- M4 — Interactions API
-  - Interactions CRUD
-  - POST side effects: last_connected_at + reminder dismissal
-  - Side effect specs
+- M1 — Rename to SABER, schema (5 migrations), models with
+  string-backed enums, Devise (single user), RSpec + FactoryBot baseline
+- M2 — People CRUD, contact methods, important dates, connection
+  score computation, cadence derivation
+- M3 — DriftDetectionJob (Sidekiq, daily, idempotent), rule-based
+  PromptGenerator, GET /api/dashboard/{reconnect,upcoming}, reminder
+  dismiss + snooze
+- M4 — Interactions API (index/show/create + member void),
+  InteractionLogger service, append-only with `voided_at` flag, MAX
+  semantics on `last_connected_at` (backdated entries never move it
+  backward), score/cadence untouched by interactions
 
 ### Phase 2 — Frontend (M5–M9)
 
-- M5 — React scaffold (Vite + React 19 + TS, TanStack Query, AppLayout, auth)
+- **M5 — React scaffold** ← ACTIVE
+  - Vite + React 19 + TS, TanStack Query, AppLayout, auth shell
+
 - M6 — Dashboard UI ← lightning talk target
 - M7 — Contact List UI
 - M8 — Contact Detail UI
