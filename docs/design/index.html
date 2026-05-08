@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER — Wireframes</title>
+  <style>
+    :root {
+      --sapphire: #0F52BA;
+      --sapphire-dark: #0A3D8F;
+      --sapphire-subtle: #EAF0FB;
+      --orange: #F47C20;
+      --grey-bg: #F4F5F6;
+      --grey-border: rgba(0, 0, 0, 0.09);
+      --text-primary: #111;
+      --text-secondary: #666;
+      --text-muted: #999;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--grey-bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+    }
+    .header {
+      margin-bottom: 2.5rem;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--sapphire-dark);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: #fff;
+      border: 0.5px solid var(--grey-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, transform 0.1s;
+      display: block;
+    }
+    .card:hover {
+      border-color: var(--sapphire);
+      transform: translateY(-1px);
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 0.5px solid var(--grey-border);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">SABER</h1>
+      <p class="subtitle">
+        UI wireframes for the personal relationship CRM.
+        Reference these alongside <code>docs/design/mockups.md</code> while building.
+      </p>
+    </div>
+
+    <div class="grid">
+
+      <a href="dashboard.html" class="card">
+        <div class="card-label">M6</div>
+        <div class="card-title">Dashboard</div>
+        <div class="card-desc">Reconnect cards, stat cards, inline log interaction. Primary landing view.</div>
+      </a>
+
+      <a href="people-list.html" class="card">
+        <div class="card-label">M7</div>
+        <div class="card-title">People list</div>
+        <div class="card-desc">Search, filter chips, sort. Browse the full sphere.</div>
+      </a>
+
+      <a href="person-detail.html" class="card">
+        <div class="card-label">M8</div>
+        <div class="card-title">Person detail</div>
+        <div class="card-desc">Profile, connection score, important dates, interaction timeline.</div>
+      </a>
+
+      <a href="add-edit-person.html" class="card">
+        <div class="card-label">M9</div>
+        <div class="card-title">Add / edit person</div>
+        <div class="card-desc">Form with progressive fields, ring selector, tag selectors.</div>
+      </a>
+
+      <a href="sidebar-states.html" class="card">
+        <div class="card-label">Cross-cutting</div>
+        <div class="card-title">Sidebar states</div>
+        <div class="card-desc">Expanded vs collapsed icon rail, side by side.</div>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      Generated from design conversations in Claude.ai.
+      Final versions only — earlier iterations are documented in mockups.md.
+    </div>
+  </div>
+</body>
+</html>

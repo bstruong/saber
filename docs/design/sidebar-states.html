@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER — Sidebar States</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sapphire: #0F52BA;
+      --sapphire-dark: #0A3D8F;
+      --sapphire-subtle: #EAF0FB;
+      --orange: #F47C20;
+      --orange-light: #FEF0E6;
+      --orange-dark: #C45F0A;
+      --grey-bg: #F4F5F6;
+      --grey-border: rgba(0,0,0,0.09);
+      --text-primary: #111;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+    }
+    body { font-family: var(--font-sans); background: #fafafa; padding: 2rem; min-height: 100vh; }
+    .page-wrap { max-width: 1100px; margin: 0 auto; }
+    .page-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .page-heading { font-size: 18px; font-weight: 500; color: var(--sapphire-dark); margin-bottom: 1.5rem; }
+    .nav-back { font-size: 12px; color: var(--sapphire); text-decoration: none; margin-bottom: 1rem; display: inline-block; }
+    .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 1rem 0; }
+    .demo-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .app { border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); overflow: hidden; display: grid; min-height: 420px; }
+    .app.expanded { grid-template-columns: 200px 1fr; }
+    .app.collapsed { grid-template-columns: 52px 1fr; }
+    .sidebar { background: var(--sapphire); display: flex; flex-direction: column; padding: 1rem 0; }
+    .sidebar-top { padding: 0 12px; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-logo { font-size: 14px; font-weight: 500; color: #fff; letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; }
+    .toggle-btn { width: 24px; height: 24px; border-radius: 4px; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .toggle-icon { width: 12px; height: 2px; background: rgba(255,255,255,0.7); position: relative; }
+    .toggle-icon::before, .toggle-icon::after { content: ''; position: absolute; left: 0; width: 12px; height: 2px; background: rgba(255,255,255,0.7); }
+    .toggle-icon::before { top: -4px; }
+    .toggle-icon::after { top: 4px; }
+    .nav-items { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1; }
+    .nav-item { padding: 8px; border-radius: var(--border-radius-md); display: flex; align-items: center; gap: 10px; cursor: pointer; color: rgba(255,255,255,0.6); font-size: 13px; white-space: nowrap; overflow: hidden; }
+    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: 500; }
+    .nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 12px; height: 12px; }
+    .icon-dot { width: 5px; height: 5px; border-radius: 1px; background: currentColor; }
+    .icon-list { display: flex; flex-direction: column; gap: 2px; width: 13px; }
+    .icon-line { height: 2px; background: currentColor; border-radius: 1px; }
+    .icon-line.short { width: 8px; }
+    .icon-plus { position: relative; width: 13px; height: 13px; }
+    .icon-plus::before { content: ''; position: absolute; top: 50%; left: 0; width: 13px; height: 2px; background: currentColor; transform: translateY(-50%); border-radius: 1px; }
+    .icon-plus::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 13px; background: currentColor; transform: translateX(-50%); border-radius: 1px; }
+    .nav-bottom { margin-top: auto; padding: 0 8px; border-top: 0.5px solid rgba(255,255,255,0.12); padding-top: 1rem; }
+    .main { background: var(--grey-bg); padding: 1.25rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .page-title { font-size: 15px; font-weight: 500; color: var(--sapphire-dark); }
+    .btn-add { font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md); border: none; background: var(--orange); color: #fff; cursor: pointer; font-weight: 500; }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .stat-card { background: #fff; border-radius: var(--border-radius-md); padding: 10px 12px; border: 0.5px solid var(--grey-border); }
+    .stat-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 3px; }
+    .stat-value { font-size: 18px; font-weight: 500; color: var(--sapphire); }
+    .stat-value.accent { color: var(--orange-dark); }
+    .mock-card { background: #fff; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); padding: 12px; display: grid; grid-template-columns: 28px 1fr; gap: 10px; margin-bottom: 8px; }
+    .mock-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--sapphire-subtle); flex-shrink: 0; }
+    .mock-lines { display: flex; flex-direction: column; gap: 6px; padding-top: 2px; }
+    .mock-line { height: 8px; background: var(--grey-bg); border-radius: 4px; }
+    .tooltip-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: center; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a href="index.html" class="nav-back">← Back to wireframes</a>
+    <div class="page-label">Cross-cutting</div>
+    <h2 class="page-heading">Sidebar states</h2>
+
+    <div class="demo-row">
+      <div>
+        <div class="demo-label">Expanded</div>
+        <div class="app expanded">
+          <div class="sidebar">
+            <div class="sidebar-top">
+              <span class="sidebar-logo">SABER</span>
+              <button class="toggle-btn"><div class="toggle-icon"></div></button>
+            </div>
+            <div class="nav-items">
+              <div class="nav-item active">
+                <div class="nav-icon"><div class="icon-grid"><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div></div></div>
+                Dashboard
+              </div>
+              <div class="nav-item">
+                <div class="nav-icon"><div class="icon-list"><div class="icon-line"></div><div class="icon-line short"></div><div class="icon-line"></div></div></div>
+                People
+              </div>
+            </div>
+            <div class="nav-bottom">
+              <div class="nav-item">
+                <div class="nav-icon"><div class="icon-plus"></div></div>
+                Add person
+              </div>
+            </div>
+          </div>
+          <div class="main">
+            <div class="page-header">
+              <span class="page-title">Good morning, Brian</span>
+              <button class="btn-add">+ Add person</button>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card"><div class="stat-label">Time to reconnect</div><div class="stat-value accent">7</div></div>
+              <div class="stat-card"><div class="stat-label">Coming up soon</div><div class="stat-value">4</div></div>
+              <div class="stat-card"><div class="stat-label">In your circle</div><div class="stat-value">38</div></div>
+            </div>
+            <div class="mock-card"><div class="mock-avatar"></div><div class="mock-lines"><div class="mock-line" style="width:70%"></div><div class="mock-line" style="width:90%"></div></div></div>
+            <div class="mock-card"><div class="mock-avatar" style="background:var(--orange-light)"></div><div class="mock-lines"><div class="mock-line" style="width:55%"></div><div class="mock-line" style="width:80%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="demo-label">Collapsed</div>
+        <div class="app collapsed">
+          <div class="sidebar">
+            <div class="sidebar-top" style="justify-content:center; padding: 0 0 1rem 0; margin: 0 8px 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.12);">
+              <button class="toggle-btn"><div class="toggle-icon"></div></button>
+            </div>
+            <div class="nav-items">
+              <div class="nav-item active" style="justify-content:center; padding: 8px 0;">
+                <div class="nav-icon"><div class="icon-grid"><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div></div></div>
+              </div>
+              <div class="nav-item" style="justify-content:center; padding: 8px 0;">
+                <div class="nav-icon"><div class="icon-list"><div class="icon-line"></div><div class="icon-line short"></div><div class="icon-line"></div></div></div>
+              </div>
+            </div>
+            <div class="nav-bottom" style="padding: 1rem 0 0;">
+              <div class="nav-item" style="justify-content:center; padding: 8px 0;">
+                <div class="nav-icon"><div class="icon-plus"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="main">
+            <div class="page-header">
+              <span class="page-title">Good morning, Brian</span>
+              <button class="btn-add">+ Add person</button>
+            </div>
+            <div class="stats-row">
+              <div class="stat-card"><div class="stat-label">Time to reconnect</div><div class="stat-value accent">7</div></div>
+              <div class="stat-card"><div class="stat-label">Coming up soon</div><div class="stat-value">4</div></div>
+              <div class="stat-card"><div class="stat-label">In your circle</div><div class="stat-value">38</div></div>
+            </div>
+            <div class="mock-card"><div class="mock-avatar"></div><div class="mock-lines"><div class="mock-line" style="width:70%"></div><div class="mock-line" style="width:90%"></div></div></div>
+            <div class="mock-card"><div class="mock-avatar" style="background:var(--orange-light)"></div><div class="mock-lines"><div class="mock-line" style="width:55%"></div><div class="mock-line" style="width:80%"></div></div></div>
+          </div>
+        </div>
+        <div class="tooltip-hint">Hover over icons shows label tooltip</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER — Person Detail</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sapphire: #0F52BA;
+      --sapphire-dark: #0A3D8F;
+      --sapphire-subtle: #EAF0FB;
+      --orange: #F47C20;
+      --orange-light: #FEF0E6;
+      --orange-dark: #C45F0A;
+      --grey-bg: #F4F5F6;
+      --grey-card: #fff;
+      --grey-border: rgba(0,0,0,0.09);
+      --text-primary: #111;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+    }
+    body { font-family: var(--font-sans); background: #fafafa; padding: 2rem; min-height: 100vh; }
+    .page-wrap { max-width: 1100px; margin: 0 auto; }
+    .page-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .page-heading { font-size: 18px; font-weight: 500; color: var(--sapphire-dark); margin-bottom: 1.5rem; }
+    .nav-back { font-size: 12px; color: var(--sapphire); text-decoration: none; margin-bottom: 1rem; display: inline-block; }
+    .app { display: grid; grid-template-columns: 52px 1fr; min-height: 760px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); overflow: hidden; }
+    .sidebar { background: var(--sapphire); display: flex; flex-direction: column; padding: 1rem 0; }
+    .sidebar-top { margin: 0 8px 1rem; padding-bottom: 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: center; }
+    .toggle-btn { width: 24px; height: 24px; border-radius: 4px; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .toggle-icon { width: 12px; height: 2px; background: rgba(255,255,255,0.7); position: relative; }
+    .toggle-icon::before, .toggle-icon::after { content: ''; position: absolute; left: 0; width: 12px; height: 2px; background: rgba(255,255,255,0.7); }
+    .toggle-icon::before { top: -4px; }
+    .toggle-icon::after { top: 4px; }
+    .nav-items { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1; }
+    .nav-item { padding: 8px 0; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.5); }
+    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 12px; height: 12px; }
+    .icon-dot { width: 5px; height: 5px; border-radius: 1px; background: currentColor; }
+    .icon-list { display: flex; flex-direction: column; gap: 2px; width: 13px; }
+    .icon-line { height: 2px; background: currentColor; border-radius: 1px; }
+    .icon-line.short { width: 8px; }
+    .icon-plus { position: relative; width: 13px; height: 13px; }
+    .icon-plus::before { content: ''; position: absolute; top: 50%; left: 0; width: 13px; height: 2px; background: currentColor; transform: translateY(-50%); border-radius: 1px; }
+    .icon-plus::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 13px; background: currentColor; transform: translateX(-50%); border-radius: 1px; }
+    .nav-bottom { margin-top: auto; padding: 1rem 8px 0; border-top: 0.5px solid rgba(255,255,255,0.12); }
+    .main { background: var(--grey-bg); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow: hidden; }
+    .page-header { display: flex; align-items: center; gap: 12px; }
+    .back-btn { font-size: 12px; color: var(--sapphire); cursor: pointer; display: flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; }
+    .back-arrow { width: 6px; height: 6px; border-left: 1.5px solid var(--sapphire); border-bottom: 1.5px solid var(--sapphire); transform: rotate(45deg); }
+    .page-title { font-size: 16px; font-weight: 500; color: var(--sapphire-dark); }
+    .content-grid { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; align-items: start; }
+    .card { background: #fff; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+    .profile-top { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 0.5px solid var(--grey-border); }
+    .avatar-lg { width: 48px; height: 48px; border-radius: 50%; background: var(--sapphire-subtle); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; color: var(--sapphire-dark); flex-shrink: 0; }
+    .profile-name { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+    .profile-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .edit-btn { margin-left: auto; font-size: 11px; padding: 4px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--grey-border); background: transparent; color: var(--text-secondary); cursor: pointer; }
+    .section-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .field-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 5px 0; font-size: 12px; }
+    .field-label { color: var(--text-muted); flex-shrink: 0; width: 90px; }
+    .field-value { color: var(--text-primary); text-align: right; flex: 1; }
+    .field-value.link { color: var(--sapphire); }
+    .divider { border: none; border-top: 0.5px solid var(--grey-border); margin: 12px 0; }
+    .ring-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--sapphire-subtle); color: var(--sapphire-dark); display: inline-block; }
+    .score-bar-wrap { flex: 1; height: 5px; background: var(--grey-bg); border-radius: 3px; overflow: hidden; }
+    .score-bar { height: 100%; background: var(--sapphire); border-radius: 3px; }
+    .score-val { font-size: 12px; font-weight: 500; color: var(--sapphire); min-width: 24px; }
+    .score-source { font-size: 11px; color: var(--text-muted); }
+    .override-btn { font-size: 11px; color: var(--sapphire); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+    .notes-text { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+    .event-list { display: flex; flex-direction: column; gap: 6px; }
+    .event-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .event-name { color: var(--text-primary); }
+    .event-date { color: var(--text-muted); }
+    .event-badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: #F0F4FF; color: var(--sapphire); }
+    .add-event { font-size: 11px; color: var(--sapphire); cursor: pointer; background: none; border: none; padding: 0; margin-top: 8px; display: block; }
+    .right-col { display: flex; flex-direction: column; gap: 1rem; }
+    .interaction-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .interaction-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+    .log-btn { font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md); border: none; background: var(--orange); color: #fff; cursor: pointer; font-weight: 500; }
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .timeline-item { display: grid; grid-template-columns: 16px 1fr; gap: 12px; padding-bottom: 16px; position: relative; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item:last-child .timeline-line { display: none; }
+    .timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--sapphire-subtle); border: 2px solid var(--sapphire); margin-top: 3px; flex-shrink: 0; position: relative; z-index: 1; }
+    .timeline-line { position: absolute; left: 4px; top: 14px; bottom: 0; width: 1px; background: var(--grey-border); }
+    .timeline-content { min-width: 0; }
+    .timeline-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .timeline-date { font-size: 11px; color: var(--text-muted); }
+    .timeline-type { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: var(--grey-bg); color: var(--text-secondary); }
+    .timeline-note { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .cadence-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .cadence-label { color: var(--text-muted); }
+    .cadence-val { color: var(--text-primary); font-weight: 500; }
+    .cadence-override { font-size: 11px; color: var(--sapphire); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a href="index.html" class="nav-back">← Back to wireframes</a>
+    <div class="page-label">M8</div>
+    <h2 class="page-heading">Person detail</h2>
+
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-top">
+          <button class="toggle-btn"><div class="toggle-icon"></div></button>
+        </div>
+        <div class="nav-items">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-grid"><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div></div></div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon"><div class="icon-list"><div class="icon-line"></div><div class="icon-line short"></div><div class="icon-line"></div></div></div>
+          </div>
+        </div>
+        <div class="nav-bottom">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-plus"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <button class="back-btn"><span class="back-arrow"></span> People</button>
+        </div>
+
+        <div class="content-grid">
+
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+
+            <div class="card">
+              <div class="profile-top">
+                <div class="avatar-lg">JC</div>
+                <div>
+                  <div class="profile-name">James Chen</div>
+                  <div class="profile-sub">Haven't talked in 94 days</div>
+                </div>
+                <button class="edit-btn">Edit</button>
+              </div>
+
+              <div class="section-title">Contact info</div>
+              <div class="field-row"><span class="field-label">LinkedIn</span><span class="field-value link">@jameschen</span></div>
+              <div class="field-row"><span class="field-label">Email</span><span class="field-value link">james@acme.com</span></div>
+
+              <hr class="divider">
+
+              <div class="section-title">Relationship</div>
+              <div class="field-row"><span class="field-label">Ring</span><span class="field-value"><span class="ring-badge">Inner circle</span></span></div>
+              <div class="field-row" style="align-items:center;">
+                <span class="field-label">Connection score</span>
+                <div style="display:flex; align-items:center; gap:8px; flex:1; justify-content:flex-end;">
+                  <div class="score-bar-wrap"><div class="score-bar" style="width:80%"></div></div>
+                  <span class="score-val">16</span>
+                </div>
+              </div>
+              <div class="field-row"><span class="field-label"></span><span class="field-value"><span class="score-source">Computed · </span><button class="override-btn">Override</button></span></div>
+
+              <hr class="divider">
+
+              <div class="section-title">Cadence</div>
+              <div class="cadence-row">
+                <span class="cadence-label">Suggested</span>
+                <span class="cadence-val">Every 30 days</span>
+              </div>
+              <div class="cadence-row" style="margin-top:4px;">
+                <span class="cadence-label">Override</span>
+                <button class="cadence-override">Set custom cadence</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Notes</div>
+              <p class="notes-text">Fintech investor, ex-Square. Very well connected in the SF startup scene. Prefers texting over email. Usually free for coffee on Friday mornings.</p>
+
+              <hr class="divider">
+
+              <div class="section-title">Needs + can offer</div>
+              <p class="notes-text">Looking for senior PM leads in fintech. Can make warm intros to Series A founders and a few VCs at Andreessen.</p>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Important dates</div>
+              <div class="event-list">
+                <div class="event-item">
+                  <span class="event-name">Lunar New Year</span>
+                  <div style="display:flex;gap:6px;align-items:center;"><span class="event-date">Jan 29</span><span class="event-badge">In 12 days</span></div>
+                </div>
+                <div class="event-item">
+                  <span class="event-name">Birthday</span>
+                  <span class="event-date">Mar 4</span>
+                </div>
+                <div class="event-item">
+                  <span class="event-name">Home anniversary</span>
+                  <span class="event-date">Jun 12</span>
+                </div>
+              </div>
+              <button class="add-event">+ Add date</button>
+            </div>
+
+          </div>
+
+          <div class="right-col">
+            <div class="card">
+              <div class="interaction-header">
+                <span class="interaction-title">Interaction history</span>
+                <button class="log-btn">We connected</button>
+              </div>
+
+              <div class="timeline">
+
+                <div class="timeline-item">
+                  <div style="position:relative;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div class="timeline-content">
+                    <div class="timeline-meta">
+                      <span class="timeline-date">Oct 18, 2025</span>
+                      <span class="timeline-type">Coffee</span>
+                    </div>
+                    <p class="timeline-note">Met at Sightglass. He's looking at a new fund focused on fintech infrastructure. Mentioned he might have a PM role opening at one of his portfolio companies — follow up in Jan.</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div style="position:relative;">
+                    <div class="timeline-dot" style="background:var(--grey-bg); border-color: var(--grey-border);"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div class="timeline-content">
+                    <div class="timeline-meta">
+                      <span class="timeline-date">Aug 3, 2025</span>
+                      <span class="timeline-type">Text</span>
+                    </div>
+                    <p class="timeline-note">Checked in after seeing his LinkedIn post about the new fund closing. He appreciated the message.</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div style="position:relative;">
+                    <div class="timeline-dot" style="background:var(--grey-bg); border-color: var(--grey-border);"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div class="timeline-content">
+                    <div class="timeline-meta">
+                      <span class="timeline-date">May 14, 2025</span>
+                      <span class="timeline-type">Lunch</span>
+                    </div>
+                    <p class="timeline-note">Introduced him to Kelly at Andreessen. Good energy — he said Kelly was exactly who he needed to talk to. Good intro.</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div style="position:relative;">
+                    <div class="timeline-dot" style="background:var(--grey-bg); border-color: var(--grey-border);"></div>
+                  </div>
+                  <div class="timeline-content">
+                    <div class="timeline-meta">
+                      <span class="timeline-date">Feb 28, 2025</span>
+                      <span class="timeline-type">Event</span>
+                    </div>
+                    <p class="timeline-note">Met at SF Ruby meetup. He was demoing a Rails side project. Exchanged contacts after the talk.</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

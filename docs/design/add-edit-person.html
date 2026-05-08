@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER — Add / Edit Person</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sapphire: #0F52BA;
+      --sapphire-dark: #0A3D8F;
+      --sapphire-subtle: #EAF0FB;
+      --orange: #F47C20;
+      --orange-light: #FEF0E6;
+      --orange-dark: #C45F0A;
+      --grey-bg: #F4F5F6;
+      --grey-border: rgba(0,0,0,0.09);
+      --text-primary: #111;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+    }
+    body { font-family: var(--font-sans); background: #fafafa; padding: 2rem; min-height: 100vh; }
+    .page-wrap { max-width: 1100px; margin: 0 auto; }
+    .page-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .page-heading { font-size: 18px; font-weight: 500; color: var(--sapphire-dark); margin-bottom: 1.5rem; }
+    .nav-back { font-size: 12px; color: var(--sapphire); text-decoration: none; margin-bottom: 1rem; display: inline-block; }
+    .app { display: grid; grid-template-columns: 52px 1fr; min-height: 780px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); overflow: hidden; }
+    .sidebar { background: var(--sapphire); display: flex; flex-direction: column; padding: 1rem 0; }
+    .sidebar-top { margin: 0 8px 1rem; padding-bottom: 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: center; }
+    .toggle-btn { width: 24px; height: 24px; border-radius: 4px; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .toggle-icon { width: 12px; height: 2px; background: rgba(255,255,255,0.7); position: relative; }
+    .toggle-icon::before, .toggle-icon::after { content: ''; position: absolute; left: 0; width: 12px; height: 2px; background: rgba(255,255,255,0.7); }
+    .toggle-icon::before { top: -4px; }
+    .toggle-icon::after { top: 4px; }
+    .nav-items { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1; }
+    .nav-item { padding: 8px 0; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.5); }
+    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 12px; height: 12px; }
+    .icon-dot { width: 5px; height: 5px; border-radius: 1px; background: currentColor; }
+    .icon-list { display: flex; flex-direction: column; gap: 2px; width: 13px; }
+    .icon-line { height: 2px; background: currentColor; border-radius: 1px; }
+    .icon-line.short { width: 8px; }
+    .icon-plus { position: relative; width: 13px; height: 13px; }
+    .icon-plus::before { content: ''; position: absolute; top: 50%; left: 0; width: 13px; height: 2px; background: currentColor; transform: translateY(-50%); border-radius: 1px; }
+    .icon-plus::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 13px; background: currentColor; transform: translateX(-50%); border-radius: 1px; }
+    .nav-bottom { margin-top: auto; padding: 1rem 8px 0; border-top: 0.5px solid rgba(255,255,255,0.12); }
+    .main { background: var(--grey-bg); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .page-header { display: flex; align-items: center; gap: 12px; }
+    .back-btn { font-size: 12px; color: var(--sapphire); cursor: pointer; display: flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; }
+    .back-arrow { width: 6px; height: 6px; border-left: 1.5px solid var(--sapphire); border-bottom: 1.5px solid var(--sapphire); transform: rotate(45deg); }
+    .page-title { font-size: 16px; font-weight: 500; color: var(--sapphire-dark); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+    .card { background: #fff; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .section-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 12px; color: var(--text-secondary); }
+    .field-input { font-size: 13px; padding: 7px 10px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-md); background: var(--grey-bg); color: var(--text-primary); font-family: var(--font-sans); }
+    .field-input:focus { outline: none; border-color: var(--sapphire); background: #fff; }
+    .field-textarea { font-size: 13px; padding: 8px 10px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-md); background: var(--grey-bg); color: var(--text-primary); font-family: var(--font-sans); resize: none; line-height: 1.5; }
+    .field-hint { font-size: 11px; color: var(--text-muted); }
+    .contact-method-row { display: grid; grid-template-columns: 100px 1fr 24px; gap: 8px; align-items: center; }
+    .method-select { font-size: 12px; padding: 7px 8px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-md); background: var(--grey-bg); color: var(--text-secondary); font-family: var(--font-sans); }
+    .remove-btn { width: 20px; height: 20px; border-radius: 50%; border: 0.5px solid var(--grey-border); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; flex-shrink: 0; }
+    .add-link { font-size: 12px; color: var(--sapphire); cursor: pointer; background: none; border: none; padding: 0; text-align: left; }
+    .ring-options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ring-option { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--grey-border); background: #fff; color: var(--text-secondary); cursor: pointer; }
+    .ring-option.selected { background: var(--sapphire-subtle); color: var(--sapphire-dark); border-color: var(--sapphire); font-weight: 500; }
+    .divider { border: none; border-top: 0.5px solid var(--grey-border); }
+    .date-row { display: grid; grid-template-columns: 1fr 110px 24px; gap: 8px; align-items: center; }
+    .cultural-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cultural-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--grey-border); background: #fff; color: var(--text-secondary); cursor: pointer; }
+    .cultural-tag.selected { background: #F0F4FF; color: var(--sapphire); border-color: var(--sapphire); }
+    .relationship-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rel-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--grey-border); background: #fff; color: var(--text-secondary); cursor: pointer; }
+    .rel-tag.selected { background: var(--orange-light); color: var(--orange-dark); border-color: var(--orange); }
+    .score-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); }
+    .form-footer { display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
+    .btn-cancel { font-size: 13px; padding: 7px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--grey-border); background: transparent; color: var(--text-secondary); cursor: pointer; }
+    .btn-save { font-size: 13px; padding: 7px 20px; border-radius: var(--border-radius-md); border: none; background: var(--sapphire); color: #fff; cursor: pointer; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a href="index.html" class="nav-back">← Back to wireframes</a>
+    <div class="page-label">M9</div>
+    <h2 class="page-heading">Add / edit person</h2>
+
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-top">
+          <button class="toggle-btn"><div class="toggle-icon"></div></button>
+        </div>
+        <div class="nav-items">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-grid"><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div></div></div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon"><div class="icon-list"><div class="icon-line"></div><div class="icon-line short"></div><div class="icon-line"></div></div></div>
+          </div>
+        </div>
+        <div class="nav-bottom">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-plus"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <button class="back-btn"><span class="back-arrow"></span> People</button>
+          <span class="page-title">Add person</span>
+        </div>
+
+        <div class="form-grid">
+
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+
+            <div class="card">
+              <div class="section-title">Basic info</div>
+              <div class="field">
+                <label class="field-label">Name</label>
+                <input class="field-input" type="text" placeholder="Full name" />
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-title">How to reach them</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="contact-method-row">
+                  <select class="method-select">
+                    <option>LinkedIn</option>
+                    <option>Email</option>
+                    <option>Phone</option>
+                    <option>Twitter / X</option>
+                    <option>Instagram</option>
+                    <option>Other</option>
+                  </select>
+                  <input class="field-input" type="text" placeholder="Handle or value" />
+                  <button class="remove-btn">×</button>
+                </div>
+                <div class="contact-method-row">
+                  <select class="method-select">
+                    <option>Email</option>
+                    <option>LinkedIn</option>
+                    <option>Phone</option>
+                    <option>Twitter / X</option>
+                    <option>Instagram</option>
+                    <option>Other</option>
+                  </select>
+                  <input class="field-input" type="text" placeholder="Handle or value" />
+                  <button class="remove-btn">×</button>
+                </div>
+              </div>
+              <button class="add-link">+ Add another</button>
+              <p class="field-hint">Add at least one. Social handle is enough to get started.</p>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Ring</div>
+              <div class="ring-options">
+                <span class="ring-option">Inner circle</span>
+                <span class="ring-option selected">Network</span>
+                <span class="ring-option">Community</span>
+                <span class="ring-option">Acquaintances</span>
+                <span class="ring-option">Stranger</span>
+              </div>
+              <p class="field-hint">Determines suggested outreach cadence. You can change this anytime.</p>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Relationship tags</div>
+              <div class="relationship-tags">
+                <span class="rel-tag selected">Parent</span>
+                <span class="rel-tag">Spouse / partner</span>
+                <span class="rel-tag">Past client</span>
+                <span class="rel-tag">Colleague</span>
+                <span class="rel-tag">Mentor</span>
+                <span class="rel-tag">Founder</span>
+              </div>
+              <p class="field-hint">Used to surface Father's Day, Mother's Day, and other relevant prompts.</p>
+            </div>
+
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+
+            <div class="card">
+              <div class="section-title">Notes</div>
+              <textarea class="field-textarea" rows="4" placeholder="Who are they? Personality, preferences, how you met, anything worth remembering..."></textarea>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Needs + can offer</div>
+              <textarea class="field-textarea" rows="4" placeholder="What do they need help with? What can they offer you or others in your circle?"></textarea>
+            </div>
+
+            <div class="card">
+              <div class="section-title">Important dates</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="date-row">
+                  <input class="field-input" type="text" placeholder="e.g. Birthday, Home anniversary" />
+                  <input class="field-input" type="text" placeholder="MM / DD" />
+                  <button class="remove-btn">×</button>
+                </div>
+              </div>
+              <button class="add-link" style="margin-top:4px;">+ Add date</button>
+
+              <hr class="divider">
+
+              <div class="section-title" style="margin-top:4px;">Cultural celebrations</div>
+              <div class="cultural-tags">
+                <span class="cultural-tag selected">Lunar New Year</span>
+                <span class="cultural-tag">Diwali</span>
+                <span class="cultural-tag">Eid</span>
+                <span class="cultural-tag">Hanukkah</span>
+                <span class="cultural-tag">Kwanzaa</span>
+              </div>
+              <p class="field-hint">SABER will surface a reconnect prompt before these dates automatically.</p>
+            </div>
+
+            <div class="card">
+              <div class="score-row">
+                <span>Connection score will be computed after saving.</span>
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <button class="btn-cancel">Cancel</button>
+              <button class="btn-save">Save person</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

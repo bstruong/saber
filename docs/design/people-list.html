@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SABER — People List</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sapphire: #0F52BA;
+      --sapphire-dark: #0A3D8F;
+      --sapphire-subtle: #EAF0FB;
+      --orange: #F47C20;
+      --orange-light: #FEF0E6;
+      --orange-dark: #C45F0A;
+      --grey-bg: #F4F5F6;
+      --grey-border: rgba(0,0,0,0.09);
+      --text-primary: #111;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+    }
+    body { font-family: var(--font-sans); background: #fafafa; padding: 2rem; min-height: 100vh; }
+    .page-wrap { max-width: 1100px; margin: 0 auto; }
+    .page-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .page-heading { font-size: 18px; font-weight: 500; color: var(--sapphire-dark); margin-bottom: 1.5rem; }
+    .nav-back { font-size: 12px; color: var(--sapphire); text-decoration: none; margin-bottom: 1rem; display: inline-block; }
+    .app { display: grid; grid-template-columns: 52px 1fr; min-height: 680px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); overflow: hidden; }
+    .sidebar { background: var(--sapphire); display: flex; flex-direction: column; padding: 1rem 0; }
+    .sidebar-top { margin: 0 8px 1rem; padding-bottom: 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.12); display: flex; justify-content: center; }
+    .toggle-btn { width: 24px; height: 24px; border-radius: 4px; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .toggle-icon { width: 12px; height: 2px; background: rgba(255,255,255,0.7); position: relative; }
+    .toggle-icon::before, .toggle-icon::after { content: ''; position: absolute; left: 0; width: 12px; height: 2px; background: rgba(255,255,255,0.7); }
+    .toggle-icon::before { top: -4px; }
+    .toggle-icon::after { top: 4px; }
+    .nav-items { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1; }
+    .nav-item { padding: 8px 0; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.5); }
+    .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+    .nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 12px; height: 12px; }
+    .icon-dot { width: 5px; height: 5px; border-radius: 1px; background: currentColor; }
+    .icon-list { display: flex; flex-direction: column; gap: 2px; width: 13px; }
+    .icon-line { height: 2px; background: currentColor; border-radius: 1px; }
+    .icon-line.short { width: 8px; }
+    .icon-plus { position: relative; width: 13px; height: 13px; }
+    .icon-plus::before { content: ''; position: absolute; top: 50%; left: 0; width: 13px; height: 2px; background: currentColor; transform: translateY(-50%); border-radius: 1px; }
+    .icon-plus::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 13px; background: currentColor; transform: translateX(-50%); border-radius: 1px; }
+    .nav-bottom { margin-top: auto; padding: 1rem 8px 0; border-top: 0.5px solid rgba(255,255,255,0.12); }
+    .main { background: var(--grey-bg); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; }
+    .page-title { font-size: 16px; font-weight: 500; color: var(--sapphire-dark); }
+    .btn-add { font-size: 12px; padding: 6px 14px; border-radius: var(--border-radius-md); border: none; background: var(--orange); color: #fff; cursor: pointer; font-weight: 500; }
+    .toolbar { display: flex; align-items: center; gap: 10px; }
+    .search-wrap { position: relative; flex: 1; }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; border: 1.5px solid var(--text-muted); border-radius: 50%; }
+    .search-icon::after { content: ''; position: absolute; bottom: -4px; right: -3px; width: 5px; height: 1.5px; background: var(--text-muted); transform: rotate(45deg); border-radius: 1px; }
+    .search-input { width: 100%; padding: 7px 10px 7px 30px; font-size: 13px; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-md); background: #fff; color: var(--text-primary); font-family: var(--font-sans); }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-chip { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--grey-border); background: #fff; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+    .filter-chip.active { background: var(--sapphire-subtle); color: var(--sapphire); border-color: var(--sapphire); font-weight: 500; }
+    .sort-select { font-size: 12px; padding: 4px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--grey-border); background: #fff; color: var(--text-secondary); font-family: var(--font-sans); cursor: pointer; }
+    .contact-table { background: #fff; border: 0.5px solid var(--grey-border); border-radius: var(--border-radius-lg); overflow: hidden; }
+    .table-header { display: grid; grid-template-columns: 36px 2fr 1fr 1fr 1.2fr 80px; gap: 12px; padding: 9px 14px; border-bottom: 0.5px solid var(--grey-border); background: var(--grey-bg); }
+    .th { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .contact-row { display: grid; grid-template-columns: 36px 2fr 1fr 1fr 1.2fr 80px; gap: 12px; padding: 10px 14px; border-bottom: 0.5px solid var(--grey-border); align-items: center; cursor: pointer; }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row:hover { background: var(--grey-bg); }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--sapphire-subtle); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--sapphire-dark); flex-shrink: 0; }
+    .avatar.orange { background: var(--orange-light); color: var(--orange-dark); }
+    .avatar.green { background: #E6F4F1; color: #0D5C4A; }
+    .avatar.purple { background: #F0EEFE; color: #4A3BA8; }
+    .avatar.pink { background: #FDE8F0; color: #8C2F54; }
+    .contact-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+    .contact-handle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .ring-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--sapphire-subtle); color: var(--sapphire-dark); white-space: nowrap; display: inline-block; }
+    .ring-badge.network { background: #E6F4F1; color: #0D5C4A; }
+    .ring-badge.community { background: #FEF3E2; color: #7A4A10; }
+    .ring-badge.acquaintances { background: #F4F5F6; color: #555; }
+    .td { font-size: 12px; color: var(--text-secondary); }
+    .td.overdue { color: var(--orange-dark); font-weight: 500; }
+    .event-pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #F0F4FF; color: var(--sapphire); white-space: nowrap; display: inline-block; }
+    .no-event { font-size: 11px; color: var(--text-muted); }
+    .row-action { font-size: 11px; padding: 4px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--grey-border); background: transparent; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+    .count-label { font-size: 12px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a href="index.html" class="nav-back">← Back to wireframes</a>
+    <div class="page-label">M7</div>
+    <h2 class="page-heading">People list</h2>
+
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-top">
+          <button class="toggle-btn"><div class="toggle-icon"></div></button>
+        </div>
+        <div class="nav-items">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-grid"><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div><div class="icon-dot"></div></div></div>
+          </div>
+          <div class="nav-item active">
+            <div class="nav-icon"><div class="icon-list"><div class="icon-line"></div><div class="icon-line short"></div><div class="icon-line"></div></div></div>
+          </div>
+        </div>
+        <div class="nav-bottom">
+          <div class="nav-item">
+            <div class="nav-icon"><div class="icon-plus"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="page-header">
+          <span class="page-title">People</span>
+          <button class="btn-add">+ Add person</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <div class="search-icon"></div>
+            <input class="search-input" type="text" placeholder="Search by name, handle, or notes..." />
+          </div>
+          <select class="sort-select">
+            <option>Sort: Most neglected</option>
+            <option>Sort: Last connected</option>
+            <option>Sort: Name</option>
+            <option>Sort: Ring</option>
+          </select>
+        </div>
+
+        <div class="filter-row">
+          <span class="filter-chip active">All</span>
+          <span class="filter-chip">Inner circle</span>
+          <span class="filter-chip">Network</span>
+          <span class="filter-chip">Community</span>
+          <span class="filter-chip">Acquaintances</span>
+          <span class="filter-chip">Upcoming events</span>
+          <span class="filter-chip">Time to reconnect</span>
+        </div>
+
+        <div class="contact-table">
+          <div class="table-header">
+            <div></div>
+            <div class="th">Name</div>
+            <div class="th">Ring</div>
+            <div class="th">Last connected</div>
+            <div class="th">Upcoming</div>
+            <div class="th"></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar">JC</div>
+            <div>
+              <div class="contact-name">James Chen</div>
+              <div class="contact-handle">@jameschen · linkedin</div>
+            </div>
+            <div><span class="ring-badge">Inner circle</span></div>
+            <div class="td overdue">94 days ago</div>
+            <div><span class="event-pill">Lunar New Year — Jan 29</span></div>
+            <div><button class="row-action">View</button></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar orange">SR</div>
+            <div>
+              <div class="contact-name">Sofia Reyes</div>
+              <div class="contact-handle">@sofiar · instagram</div>
+            </div>
+            <div><span class="ring-badge network">Network</span></div>
+            <div class="td overdue">61 days ago</div>
+            <div><span class="event-pill">Mother's Day — May 11</span></div>
+            <div><button class="row-action">View</button></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar green">MP</div>
+            <div>
+              <div class="contact-name">Marcus Park</div>
+              <div class="contact-handle">@marcusp · twitter</div>
+            </div>
+            <div><span class="ring-badge community">Community</span></div>
+            <div class="td overdue">47 days ago</div>
+            <div><span class="event-pill">Birthday — Apr 30</span></div>
+            <div><button class="row-action">View</button></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar purple">AL</div>
+            <div>
+              <div class="contact-name">Amy Liu</div>
+              <div class="contact-handle">amy@gmail.com</div>
+            </div>
+            <div><span class="ring-badge network">Network</span></div>
+            <div class="td">12 days ago</div>
+            <div><span class="event-pill">Lunar New Year — Jan 29</span></div>
+            <div><button class="row-action">View</button></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar pink">DK</div>
+            <div>
+              <div class="contact-name">David Kim</div>
+              <div class="contact-handle">+1 415 555 0193</div>
+            </div>
+            <div><span class="ring-badge community">Community</span></div>
+            <div class="td">28 days ago</div>
+            <div class="no-event">—</div>
+            <div><button class="row-action">View</button></div>
+          </div>
+
+          <div class="contact-row">
+            <div class="avatar" style="background:#F4F5F6; color:#555;">RP</div>
+            <div>
+              <div class="contact-name">Rachel Park</div>
+              <div class="contact-handle">@rachelpark · linkedin</div>
+            </div>
+            <div><span class="ring-badge acquaintances">Acquaintances</span></div>
+            <div class="td">3 days ago</div>
+            <div class="no-event">—</div>
+            <div><button class="row-action">View</button></div>
+          </div>
+        </div>
+
+        <div class="count-label">Showing 6 of 38 people</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
