@@ -10,7 +10,8 @@
      origins "http://localhost:5173"
 
      resource "*",
-       headers: :any,
-       methods: [ :get, :post, :put, :patch, :delete, :options, :head ]
+       headers:     :any,
+       methods:     [ :get, :post, :put, :patch, :delete, :options, :head ],
+       credentials: true
    end
  end

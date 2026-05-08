@@ -71,6 +71,14 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include RequestHelpers, type: :request
+
+  config.before(:each, type: :request) do |example|
+    next if example.metadata[:auth] == :real
+
+    user = FactoryBot.create(:user)
+    allow_any_instance_of(Api::BaseController).to receive(:authenticate_user!).and_return(true)
+    allow_any_instance_of(Api::BaseController).to receive(:current_user).and_return(user)
+  end
 end
 
 Shoulda::Matchers.configure do |config|
