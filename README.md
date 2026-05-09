@@ -87,7 +87,12 @@ UI available at `http://localhost:5173`.
 | M2 | Core API endpoints — people CRUD, connection score, cadence | Done |
 | M3 | Dashboard API — drift detection, reminders, prompt generation | Done |
 | M4 | Interactions API — append-only with side-effect coordination | Done |
-| M5 | React frontend foundation | Planned |
-| M6 | Dashboard UI | Planned |
-| M7–M9 | Contact list, detail, and form UIs | Planned |
-| M10 | Production deployment — Fly.io + Vercel | Planned |
+| [M5](https://github.com/bstruong/saber/milestone/1) | React frontend foundation | **Active** |
+| [M6](https://github.com/bstruong/saber/milestone/2) | Dashboard UI | Planned |
+| [M7](https://github.com/bstruong/saber/milestone/3) | Contact List UI | Planned |
+| [M8](https://github.com/bstruong/saber/milestone/4) | Contact Detail UI | Planned |
+| [M9](https://github.com/bstruong/saber/milestone/5) | Add/Edit Contact UI | Planned |
+| [M10](https://github.com/bstruong/saber/milestone/6) | Production deployment — Fly.io + frontend | Planned |
+| [M11](https://github.com/bstruong/saber/milestone/7) | Lightning talk prep | Planned |
+
+Active work, design decisions, and open mockup questions are tracked in [issues](https://github.com/bstruong/saber/issues) (grouped by milestone) and the [SABER project board](https://github.com/users/bstruong/projects/1). Cross-project view: [Personal Workboard](https://github.com/users/bstruong/projects/3).
