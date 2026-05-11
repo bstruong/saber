@@ -25,10 +25,9 @@ class Person < ApplicationRecord
 
   scope :with_upcoming_events, -> {
     today = Date.today
-    upcoming = (today...(today + UPCOMING_DAYS_WINDOW)).map { |d| [ d.month, d.day ] }
-    placeholders = upcoming.map { "(?, ?)" }.join(", ")
+    upcoming_keys = (today...(today + UPCOMING_DAYS_WINDOW)).map { |day| day.month * 100 + day.day }
     joins(:important_dates)
-      .where("(important_dates.month, important_dates.day) IN (#{placeholders})", *upcoming.flatten)
+      .where("important_dates.month * 100 + important_dates.day IN (?)", upcoming_keys)
       .distinct
   }
 

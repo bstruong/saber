@@ -1,10 +1,10 @@
 class ConnectionScoreCalculator
   RING_SCORE = {
-    "inner_circle"  => 4,
-    "network"       => 3,
-    "community"     => 2,
+    "inner_circle" => 4,
+    "network" => 3,
+    "community" => 2,
     "acquaintances" => 1,
-    "stranger"      => 1
+    "stranger" => 1
   }.freeze
 
   TWO_WEEKS = 14
