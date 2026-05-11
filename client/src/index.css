@@ -48,6 +48,56 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+    /* SABER brand */
+    --color-sapphire: #0F52BA;
+    --color-sapphire-dark: #0A3D8F;
+    --color-sapphire-subtle: #EAF0FB;
+    --color-orange: #F47C20;
+    --color-orange-light: #FEF0E6;
+    --color-orange-dark: #C45F0A;
+    --color-page: #F4F5F6;
+
+    /* Destructive (lock #10) */
+    --color-danger: #DC2626;
+    --color-danger-hover: #B91C1C;
+
+    /* Event badge */
+    --color-event-bg: #F0F4FF;
+    --color-event-fg: #0F52BA;
+
+    /* Avatar palette (lock #12) */
+    --color-avatar-1-bg: #EAF0FB;
+    --color-avatar-1-fg: #0A3D8F;
+    --color-avatar-2-bg: #FEF0E6;
+    --color-avatar-2-fg: #C45F0A;
+    --color-avatar-3-bg: #E6F4F1;
+    --color-avatar-3-fg: #0D5C4A;
+    --color-avatar-4-bg: #F0EEFE;
+    --color-avatar-4-fg: #4A3BA8;
+    --color-avatar-5-bg: #FDE8F0;
+    --color-avatar-5-fg: #8C2F54;
+
+    /* Ring tiers */
+    --color-tier-inner-bg: #EAF0FB;
+    --color-tier-inner-fg: #0A3D8F;
+    --color-tier-network-bg: #E6F4F1;
+    --color-tier-network-fg: #0D5C4A;
+    --color-tier-community-bg: #FEF3E2;
+    --color-tier-community-fg: #7A4A10;
+    --color-tier-acquaintances-bg: #F4F5F6;
+    --color-tier-acquaintances-fg: #555555;
+
+    /* Typography scale (lock #8) */
+    --text-label: 11px;
+    --text-meta: 12px;
+    --text-field: 13px;
+    --text-name: 14px;
+    --text-name-lg: 15px;
+    --text-title: 16px;
+    --text-stat: 22px;
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
