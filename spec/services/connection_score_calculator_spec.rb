@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe ConnectionScoreCalculator do
   def baseline_person(**overrides)
     create(:person,
-      ring:                 :stranger,
-      score_source:         :manual,
-      importance_score:     1,
-      reciprocity_score:    1,
-      shared_values_score:  1,
+      ring:                :stranger,
+      score_source:        :manual,
+      importance_score:    1,
+      reciprocity_score:   1,
+      shared_values_score: 1,
       **overrides
     )
   end
