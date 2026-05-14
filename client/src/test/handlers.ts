@@ -39,4 +39,16 @@ export const handlers = [
     authState.user = null;
     return new HttpResponse(null, { status: 204 });
   }),
+
+  http.get(`${API_BASE_URL}/api/dashboard/reconnect`, () => {
+    return HttpResponse.json([]);
+  }),
+
+  http.get(`${API_BASE_URL}/api/dashboard/upcoming`, () => {
+    return HttpResponse.json([]);
+  }),
+
+  http.get(`${API_BASE_URL}/api/people`, () => {
+    return HttpResponse.json([]);
+  }),
 ];

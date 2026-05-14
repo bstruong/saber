@@ -60,9 +60,7 @@ describe("App auth shell", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /dashboard/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/time to reconnect/i)).toBeInTheDocument();
     });
   });
 
