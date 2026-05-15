@@ -1,3 +1,4 @@
+import { Sparkles } from "lucide-react";
 import { useCurrentUser } from "@/auth/hooks";
 import {
   useReconnectReminders,
@@ -7,6 +8,8 @@ import {
 import { useDocumentTitle } from "@/lib/use-document-title";
 import { getGreeting } from "@/lib/greeting";
 import { StatCard } from "@/components/StatCard";
+import { ReconnectCard } from "@/components/ReconnectCard";
+import { EmptyState } from "@/components/EmptyState";
 
 function displayNameFromEmail(email: string | undefined): string {
   if (!email) return "";
@@ -43,6 +46,28 @@ export default function DashboardPage() {
         <StatCard label="Coming up soon" value={upcomingCount} />
         <StatCard label="In your cirle" value={peopleCount} />
       </div>
+
+      <section className="space-y-2.5">
+        <h2 className="text-label font-medium uppercase tracking-wider text-muted-foreground">
+          Reconnect
+        </h2>
+
+        {reconnectQuery.isPending ? (
+          <p className="text-meta text-muted-foreground">Loading...</p>
+        ) : reconnectQuery.data && reconnectQuery.data.length > 0 ? (
+          <div className="flex flex-col gap-2.5">
+            {reconnectQuery.data.map((reminder) => (
+              <ReconnectCard key={reminder.id} reminder={reminder} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={Sparkles}
+            headline="You're all caught up."
+            subtext="Check back tomorrow or add someone new."
+          />
+        )}
+      </section>
     </div>
   );
 }
