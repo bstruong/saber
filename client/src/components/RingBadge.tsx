@@ -13,7 +13,7 @@ const VARIANTS: Record<Ring, string> = {
   inner_circle: "bg-tier-inner-bg text-tier-inner-fg",
   network: "bg-tier-network-bg text-tier-network-fg",
   community: "bg-tier-community-bg text-tier-community-fg",
-  acquaintances: "bg-tieracquaintances-bg text-tier-acquaintances-fg",
+  acquaintances: "bg-tier-acquaintances-bg text-tier-acquaintances-fg",
 };
 
 export function RingBadge({
