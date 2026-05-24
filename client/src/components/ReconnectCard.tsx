@@ -21,7 +21,7 @@ export function ReconnectCard({ reminder }: { reminder: ReconnectReminder }) {
                 {lastConnected}
               </p>
             </div>
-            <div className="flex shrink-0 items-conter gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               <RingBadge ring={person.ring} />
             </div>
           </div>

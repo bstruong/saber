@@ -44,7 +44,7 @@ export default function DashboardPage() {
           tone="orange"
         />
         <StatCard label="Coming up soon" value={upcomingCount} />
-        <StatCard label="In your cirle" value={peopleCount} />
+        <StatCard label="In your circle" value={peopleCount} />
       </div>
 
       <section className="space-y-2.5">
