@@ -1,10 +1,18 @@
+import { useState } from "react";
 import { Avatar } from "./Avatar";
 import { RingBadge } from "./RingBadge";
+import { Button } from "./ui/button";
+import { SnoozeOptions } from "./SnoozeOptions";
+import { LogInteractionInline } from "./LogInteractionInline";
 import { relativeDays } from "@/lib/time";
 import type { ReconnectReminder } from "@/api/dashboard";
 
+type Mode = "idle" | "logging" | "snoozing";
+
 export function ReconnectCard({ reminder }: { reminder: ReconnectReminder }) {
   const { person } = reminder;
+  const [mode, setMode] = useState<Mode>("idle");
+
   const lastConnected = person.last_connected_at
     ? relativeDays(person.last_connected_at)
     : "Not yet connected";
@@ -16,15 +24,49 @@ export function ReconnectCard({ reminder }: { reminder: ReconnectReminder }) {
         <div className="min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-name font-medium">{person.name}</p>
+              <p className="truncate text-name font-medium">
+                {person.name}
+              </p>
               <p className="mt-0.5 text-label text-muted-foreground">
                 {lastConnected}
               </p>
             </div>
-            <div className="flex shrink-0 items-conter gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               <RingBadge ring={person.ring} />
             </div>
           </div>
+
+          <p className="text-meta text-muted-foreground">
+            {reminder.reason}
+          </p>
+
+          {mode !== "logging" && (
+            <div className="flex flex-wrap gap-1.5">
+              <Button size="sm" onClick={() => setMode("logging")}>
+                We connected
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-expanded={mode === "snoozing"}
+                onClick={() => setMode(mode === "snoozing" ? "idle" : "snoozing")}
+              >
+                Remind me later
+              </Button>
+            </div>
+          )}
+
+          {mode === "snoozing" && (
+            <SnoozeOptions reminderId={reminder.id} ring={person.ring} />
+          )}
+
+          {mode === "logging" && (
+            <LogInteractionInline
+              personId={person.id}
+              reminderId={reminder.id}
+              onCancel={() => setMode("idle")}
+            />
+          )}
         </div>
       </div>
     </article>
