@@ -61,16 +61,19 @@ function useRemoveReconnectCard() {
 }
 
 export function useLogInteraction() {
-  const remove = useRemoveReconnectCard();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (vars: {
       personId: number;
       reminderId: number;
       interaction: NewInteraction;
     }) => createInteraction(vars.personId, vars.interaction),
-    onMutate: (vars) => remove.onMutate(vars.reminderId),
-    onError: remove.onError,
-    onSettled: remove.onSettled,
+    onSuccess: (_data, vars) => {
+      queryClient.setQueryData<ReconnectReminder[]>(RECONNECT_KEY, (list) =>
+        (list ?? []).filter((reminder) => reminder.id !== vars.reminderId),
+      );
+      queryClient.invalidateQueries({ queryKey: RECONNECT_KEY });
+    },
   });
 }
 
