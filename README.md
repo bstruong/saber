@@ -29,7 +29,7 @@ A personal tool for tending the relationships that matter. Records the people yo
 | | |
 |---|---|
 | **API** | Fly.io |
-| **Frontend** | TBD — evaluating Vercel, Fly.io, Cloudflare Pages |
+| **Frontend** | Vercel |
 | **Alt (documented)** | GCP — Cloud Run + Cloud SQL |
 
 ---
@@ -87,9 +87,9 @@ UI available at `http://localhost:5173`.
 | M2 | Core API endpoints — people CRUD, connection score, cadence | Done |
 | M3 | Dashboard API — drift detection, reminders, prompt generation | Done |
 | M4 | Interactions API — append-only with side-effect coordination | Done |
-| [M5](https://github.com/bstruong/saber/milestone/1) | React frontend foundation | **Active** |
-| [M6](https://github.com/bstruong/saber/milestone/2) | Dashboard UI | Planned |
-| [M7](https://github.com/bstruong/saber/milestone/3) | Contact List UI | Planned |
+| [M5](https://github.com/bstruong/saber/milestone/1) | React frontend foundation | Done |
+| [M6](https://github.com/bstruong/saber/milestone/2) | Dashboard UI | Done |
+| [M7](https://github.com/bstruong/saber/milestone/3) | Contact List UI | **Active** |
 | [M8](https://github.com/bstruong/saber/milestone/4) | Contact Detail UI | Planned |
 | [M9](https://github.com/bstruong/saber/milestone/5) | Add/Edit Contact UI | Planned |
 | [M10](https://github.com/bstruong/saber/milestone/6) | Production deployment — Fly.io + frontend | Planned |
