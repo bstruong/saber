@@ -3,6 +3,7 @@ class Interaction < ApplicationRecord
 
   scope :active, -> { where(voided_at: nil) }
   scope :voided, -> { where.not(voided_at: nil) }
+  scope :recent, -> { where("occurred_at >= ?", Time.current - RECENT_WINDOW) }
 
   enum :interaction_type, {
     coffee: "coffee",
@@ -16,4 +17,6 @@ class Interaction < ApplicationRecord
 
   validates :interaction_type, presence: true
   validates :occurred_at,      presence: true
+
+  RECENT_WINDOW = 30.days
 end

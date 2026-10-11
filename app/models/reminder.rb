@@ -6,4 +6,8 @@ class Reminder < ApplicationRecord
 
   validates :reason, presence: true
   validates :due_at, presence: true
+
+  def snoozed?
+    snoozed_until.present? && snoozed_until > Date.today
+  end
 end

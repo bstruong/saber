@@ -10,6 +10,8 @@ RSpec.describe Interaction, type: :model do
     let(:person) { create(:person) }
     let!(:active_interaction) { create(:interaction, person: person) }
     let!(:voided_interaction) { create(:interaction, person: person, voided_at: Time.current) }
+    let!(:recent_interaction) { create(:interaction, person: person, occurred_at: Time.current - Interaction::RECENT_WINDOW) }
+    let!(:not_recent_interaction) { create(:interaction, person: person, occurred_at: Time.current - Interaction::RECENT_WINDOW - 1.day) }
 
     it "active excludes voided records" do
       expect(Interaction.active).to include(active_interaction)
@@ -19,6 +21,15 @@ RSpec.describe Interaction, type: :model do
     it "voided excludes active records" do
       expect(Interaction.voided).to include(voided_interaction)
       expect(Interaction.voided).not_to include(active_interaction)
+    end
+
+    it "recent includes recent records" do
+      expect(Interaction.recent).to include(recent_interaction)
+      expect(Interaction.recent).not_to include(not_recent_interaction)
+    end
+
+    it "recent excludes not recent records" do
+      expect(Interaction.recent).not_to include(not_recent_interaction)
     end
   end
 end
