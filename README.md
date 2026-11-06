@@ -34,7 +34,7 @@ Postgres defaults (see `config/database.yml`): `127.0.0.1:5433`, user/password `
 # Start Postgres (Docker Compose plugin optional)
 docker run -d --name ikigai-postgres -p 5433:5432 \
   -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app \
-  -e POSTGRES_DB=saber_development postgres:16
+  -e POSTGRES_DB=ikigai_development postgres:16
 
 bundle install
 bin/rails db:prepare
