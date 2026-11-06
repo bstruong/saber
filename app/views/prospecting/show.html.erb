@@ -1,0 +1,58 @@
+<% content_for :title, "Prospecting" %>
+
+<h1 class="dhh-h1">Prospecting</h1>
+<p class="dhh-lede" style="margin-top: 0.4rem;">
+  Capture founders from LinkedIn and Work at a Startup, then work the queue.
+</p>
+
+<div class="dhh-split" style="margin-top: 1.75rem;">
+  <%= render "shared/prospect_capture_form",
+        source: "linkedin",
+        title: "LinkedIn",
+        subtitle: "Paste from a founder profile while you browse.",
+        placeholder_url: "https://linkedin.com/in/…" %>
+  <%= render "shared/prospect_capture_form",
+        source: "work_at_a_startup",
+        title: "Work at a Startup",
+        subtitle: "Paste from a YC company or founder listing.",
+        placeholder_url: "https://workatastartup.com/companies/…" %>
+</div>
+
+<section class="dhh-section">
+  <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem;">
+    <h2 class="dhh-h2">Queue</h2>
+    <span class="dhh-meta"><%= @prospects.size %> waiting on first touch</span>
+  </div>
+
+  <% if @prospects.any? %>
+    <div class="dhh-list">
+      <% @prospects.each do |prospect| %>
+        <div class="dhh-list-item">
+          <div style="min-width: 0; flex: 1;">
+            <div style="font-weight: 600;"><%= prospect.name %></div>
+            <div class="dhh-meta">
+              <%= source_label(prospect.source) %>
+              <% if prospect.company.present? %> · <%= prospect.company %><% end %>
+            </div>
+            <% if prospect.notes.present? %>
+              <div class="dhh-meta" style="margin-top: 0.25rem;"><%= prospect.notes %></div>
+            <% end %>
+            <% if prospect.profile_url.present? %>
+              <div class="dhh-meta" style="margin-top: 0.25rem;">
+                <%= link_to prospect.profile_url, prospect.profile_url, target: "_blank", rel: "noopener", style: "color: var(--color-link);" %>
+              </div>
+            <% end %>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <% if prospect.profile_url.present? %>
+              <%= link_to "Open profile", prospect.profile_url, target: "_blank", rel: "noopener", class: "dhh-btn dhh-btn-secondary" %>
+            <% end %>
+            <%= link_to "Log outreach", contact_path(prospect), class: "dhh-btn dhh-btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="dhh-meta">Queue is empty. Add a founder above.</p>
+  <% end %>
+</section>

@@ -1,98 +1,49 @@
-# Personal Relationship Manager: Rails 8 API + React 19
+# Ikigai CRM
 
-A personal tool for tending the relationships that matter. Records the people you know, your interactions with them, the life events that shape those relationships, and how long it has been since you last connected.
+Solo business CRM for founder prospecting and SOI networking. Capture leads from LinkedIn and YC Work at a Startup, score contacts on a 20-point card, log Hook/Help/Ask interactions, and keep a Sunday connection checklist.
 
----
+## Tech stack
 
-## Tech Stack
-
-### Backend
-| | |
+| Layer | Choice |
 |---|---|
-| **Runtime** | Ruby on Rails 8 — API mode |
-| **Database** | PostgreSQL 16 |
-| **Background jobs** | Sidekiq |
-| **Auth** | Devise — single user, registration disabled after setup |
-| **CORS** | rack-cors |
-| **Testing** | RSpec, FactoryBot, Shoulda Matchers, WebMock |
-
-### Frontend (`/client`)
-| | |
-|---|---|
-| **Framework** | Vite + React 19 + TypeScript |
-| **Styling** | Tailwind CSS v4 + shadcn/ui (Radix UI) |
-| **Routing** | React Router v7 — file-based |
-| **Server state** | TanStack Query v5 |
-| **Testing** | Vitest, React Testing Library, MSW v2, Playwright |
-
-### Deployment
-| | |
-|---|---|
-| **API** | Fly.io |
-| **Frontend** | Vercel |
-| **Alt (documented)** | GCP — Cloud Run + Cloud SQL |
-
----
+| App | Ruby on Rails 8.1 (Hotwire: Turbo + Stimulus) |
+| Database | PostgreSQL 16 |
+| Auth | Devise (single user, registration disabled) |
+| CSS | Tailwind CSS (`tailwindcss-rails`) |
+| Jobs | Sidekiq (SolidQueue migration deferred) |
+| Testing | RSpec, FactoryBot, Shoulda Matchers, WebMock |
 
 ## Architecture
 
-Rails API and React frontend are deployed as separate services — the industry standard for teams running heterogeneous clients or independent release cadences. Rails runs in API-only mode with no views or asset pipeline. The React app talks to it over REST.
+Two lead motions share one contact record:
 
-**Why REST over GraphQL?** Single client, fixed views, small entity set. GraphQL's flexibility solves a problem this project doesn't have.
+1. **Prospecting** — manual capture from LinkedIn / Work at a Startup into a first-touch queue
+2. **SOI networking** — rings, scorecard cadence, follow-up queue, Sunday checklist
 
-**Why rule-based prompts over LLM?** Deterministic, fast, zero external dependencies, zero latency, zero cost. The core loop ships first; LLM experimentation comes after it's proven.
+```
+Prospect capture → Prospect queue → First outreach → SOI cadence → Log interaction
+```
 
-**Why Fly.io over GCP as primary?** 30-minute setup vs 2–4 hours. $0–5/month vs $20–40/month. GCP is documented as a secondary deployment option for portfolio signal.
+No React client. Server-rendered HTML only.
 
----
+## Local setup
 
-## Data Model
-
-Five tables: `persons`, `contact_methods`, `important_dates`, `interactions`, `reminders`.
-
-Each person has a connection score (5–20) computed across five dimensions — ring (how close), interaction frequency, reciprocity (mutual support), personal importance, and shared values. The score sets a connection cadence (14–180 days). A daily Sidekiq job notices when a relationship has gone quiet and creates a reminder with rule-based prompt text — a small, contextual nudge to reconnect.
-
----
-
-## Running Locally
-
-**Prerequisites:** Ruby 3.4+, PostgreSQL 16, Redis
+Postgres defaults (see `config/database.yml`): `127.0.0.1:5433`, user/password `app`/`app`.
 
 ```bash
-git clone git@github.com:bstruong/saber.git
-cd saber
+# Start Postgres (Docker Compose plugin optional)
+docker run -d --name ikigai-postgres -p 5433:5432 \
+  -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app \
+  -e POSTGRES_DB=ikigai_development postgres:16
+
 bundle install
-rails db:create db:migrate db:seed
-bin/dev
+bin/rails db:prepare
+bin/rails db:seed
+bin/dev   # or: bin/rails server
 ```
 
-API available at `http://localhost:3000`.
+Sign in as `owner@ikigai.local` / `password123`.
 
-Frontend (separate):
-```bash
-cd client
-npm install
-npm run dev
-```
+## Scope notes
 
-UI available at `http://localhost:5173`.
-
----
-
-## Status
-
-| Milestone | Description | Status |
-|---|---|---|
-| M1 | Rails API foundation — schema, models, auth, testing setup | Done |
-| M2 | Core API endpoints — people CRUD, connection score, cadence | Done |
-| M3 | Dashboard API — drift detection, reminders, prompt generation | Done |
-| M4 | Interactions API — append-only with side-effect coordination | Done |
-| [M5](https://github.com/bstruong/saber/milestone/1) | React frontend foundation | Done |
-| [M6](https://github.com/bstruong/saber/milestone/2) | Dashboard UI | Done |
-| [M7](https://github.com/bstruong/saber/milestone/3) | Contact List UI | **Active** |
-| [M8](https://github.com/bstruong/saber/milestone/4) | Contact Detail UI | Planned |
-| [M9](https://github.com/bstruong/saber/milestone/5) | Add/Edit Contact UI | Planned |
-| [M10](https://github.com/bstruong/saber/milestone/6) | Production deployment — Fly.io + frontend | Planned |
-| [M11](https://github.com/bstruong/saber/milestone/7) | Lightning talk prep | Planned |
-
-Active work, design decisions, and open mockup questions are tracked in [issues](https://github.com/bstruong/saber/issues) (grouped by milestone) and the [SABER project board](https://github.com/users/bstruong/projects/1). Cross-project view: [Personal Workboard](https://github.com/users/bstruong/projects/3).
+Deferred: deals/contracts/income tools, LinkedIn/WAAS APIs, Pocket ID OIDC, production deploy.

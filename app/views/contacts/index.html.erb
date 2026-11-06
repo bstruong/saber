@@ -1,0 +1,85 @@
+<% content_for :title, "Contacts" %>
+
+<div style="display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem;">
+  <div>
+    <h1 class="dhh-h1">Contacts</h1>
+    <p class="dhh-lede" style="margin-top: 0.4rem;">Everyone you’ve captured or connected with.</p>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <%= link_to "Add prospect", prospecting_path, class: "dhh-btn dhh-btn-primary" %>
+    <%= link_to "New contact", new_contact_path, class: "dhh-btn dhh-btn-secondary" %>
+  </div>
+</div>
+
+<%= form_with url: contacts_path, method: :get, class: "dhh-panel", style: "margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.75rem;" do %>
+  <div>
+    <label class="dhh-label">Source</label>
+    <%= select_tag :source,
+          options_for_select([["All sources", ""]] + Contact::SOURCES.map { |s| [source_label(s), s] }, params[:source]),
+          class: "dhh-input",
+          style: "min-width: 10rem;",
+          onchange: "this.form.requestSubmit()" %>
+  </div>
+  <div>
+    <label class="dhh-label">SOI ring</label>
+    <%= select_tag :soi_ring,
+          options_for_select([["All rings", ""]] + Contact::SOI_RINGS.map { |r| [ring_label(r), r] }, params[:soi_ring]),
+          class: "dhh-input",
+          style: "min-width: 10rem;",
+          onchange: "this.form.requestSubmit()" %>
+  </div>
+  <div>
+    <label class="dhh-label">Follow-up</label>
+    <%= select_tag :follow_up_frequency,
+          options_for_select([["Any frequency", ""]] + Contact::FOLLOW_UP_FREQUENCIES.map { |f| [human_enum(f), f] }, params[:follow_up_frequency]),
+          class: "dhh-input",
+          style: "min-width: 10rem;",
+          onchange: "this.form.requestSubmit()" %>
+  </div>
+<% end %>
+
+<div class="dhh-table-wrap" style="margin-top: 1rem;">
+  <table class="dhh-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Company</th>
+        <th>Source</th>
+        <th>Ring</th>
+        <th>Score</th>
+        <th>Next</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @contacts.each do |contact| %>
+        <tr>
+          <td>
+            <%= link_to contact.name, contact_path(contact), style: "font-weight: 600; color: var(--color-link);" %>
+          </td>
+          <td class="dhh-meta"><%= contact.company.presence || "—" %></td>
+          <td class="dhh-meta"><%= source_label(contact.source) %></td>
+          <td class="dhh-meta"><%= ring_label(contact.soi_ring) %></td>
+          <td class="dhh-meta">
+            <% if contact.total_score.present? %>
+              <%= contact.total_score %> · <%= human_enum(contact.follow_up_frequency) %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+          <td class="dhh-meta">
+            <% if contact.prospect? %>
+              First touch
+            <% else %>
+              <%= contact.next_follow_up_due&.to_date || "—" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @contacts.empty? %>
+        <tr>
+          <td colspan="6" class="dhh-meta">No contacts match these filters.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

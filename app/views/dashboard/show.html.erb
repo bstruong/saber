@@ -1,0 +1,92 @@
+<% content_for :title, "Home" %>
+
+<div style="display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem;">
+  <div>
+    <h1 class="dhh-h1">Home</h1>
+    <p class="dhh-lede" style="margin-top: 0.4rem;">Who to reach, what’s due, and the weekly checklist.</p>
+  </div>
+  <%= link_to "Add a prospect", prospecting_path, class: "dhh-btn dhh-btn-primary" %>
+</div>
+
+<div class="dhh-stat-row" style="margin-top: 1.75rem;">
+  <div class="dhh-stat">
+    <div class="dhh-stat-label">Prospects</div>
+    <div class="dhh-stat-value"><%= @prospect_count %></div>
+  </div>
+  <div class="dhh-stat">
+    <div class="dhh-stat-label">Follow-ups due</div>
+    <div class="dhh-stat-value"><%= @follow_up_count %></div>
+  </div>
+  <div class="dhh-stat">
+    <div class="dhh-stat-label">Sunday checklist</div>
+    <div class="dhh-stat-value"><%= @sunday_checklist.completed_count %>/<%= @sunday_checklist.total_count %></div>
+  </div>
+</div>
+
+<section class="dhh-section">
+  <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem;">
+    <h2 class="dhh-h2">Prospect pulse</h2>
+    <%= link_to "All prospecting →", prospecting_path, class: "dhh-btn dhh-btn-plain" %>
+  </div>
+  <% if @prospects.any? %>
+    <div class="dhh-list">
+      <% @prospects.each do |prospect| %>
+        <div class="dhh-list-item">
+          <div>
+            <div style="font-weight: 600;"><%= prospect.name %></div>
+            <div class="dhh-meta">
+              <%= source_label(prospect.source) %>
+              <% if prospect.company.present? %> · <%= prospect.company %><% end %>
+            </div>
+          </div>
+          <%= link_to "Reach out", contact_path(prospect), class: "dhh-btn dhh-btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="dhh-meta">No prospects waiting. Add someone from Prospecting.</p>
+  <% end %>
+</section>
+
+<section class="dhh-section">
+  <h2 class="dhh-h2" style="margin-bottom: 0.75rem;">SOI follow-up</h2>
+  <% if @follow_ups.any? %>
+    <div class="dhh-list">
+      <% @follow_ups.each do |contact| %>
+        <div class="dhh-list-item">
+          <div>
+            <div style="font-weight: 600;"><%= contact.name %></div>
+            <div class="dhh-meta">
+              <%= ring_label(contact.soi_ring) %>
+              · <%= human_enum(contact.follow_up_frequency) %>
+              · due <%= contact.next_follow_up_due&.to_date %>
+            </div>
+          </div>
+          <%= link_to "Log interaction", contact_path(contact), class: "dhh-btn dhh-btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="dhh-meta">Nothing due right now.</p>
+  <% end %>
+</section>
+
+<section class="dhh-section">
+  <h2 class="dhh-h2">Sunday checklist</h2>
+  <p class="dhh-meta" style="margin: 0.35rem 0 1rem;">Week of <%= @sunday_checklist.week_of.strftime("%b %-d, %Y") %> · <%= @sunday_checklist.completed_count %>/<%= @sunday_checklist.total_count %> done</p>
+
+  <%= form_with model: @sunday_checklist, url: sunday_checklist_path, method: :patch do |f| %>
+    <% [
+      [:answered_no_reply_emails, "Answer all no-reply emails"],
+      [:cleared_social_dms, "Clear and reply to social DMs"],
+      [:scheduled_ring1_coffee, "Schedule 1 coffee or lunch with a Ring 1 contact"],
+      [:sent_ring2_hellos, "Send 2–3 hello messages to Ring 2 contacts"],
+      [:followed_up_new_contacts, "Follow up with all new contacts met this week"]
+    ].each do |attr, label| %>
+      <label class="dhh-check">
+        <%= f.check_box attr, onchange: "this.form.requestSubmit()" %>
+        <span><%= label %></span>
+      </label>
+    <% end %>
+  <% end %>
+</section>
