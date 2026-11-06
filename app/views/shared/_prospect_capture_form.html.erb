@@ -1,0 +1,28 @@
+<%# locals: source, title, subtitle, placeholder_url %>
+<div class="dhh-panel" style="height: 100%;">
+  <h2 class="dhh-h2"><%= title %></h2>
+  <p class="dhh-meta" style="margin: 0.35rem 0 1rem;"><%= subtitle %></p>
+
+  <%= form_with model: Contact.new, url: contacts_path, style: "display: grid; gap: 0.85rem;" do |f| %>
+    <%= hidden_field_tag :prospect, "1" %>
+    <%= f.hidden_field :source, value: source %>
+
+    <div>
+      <%= f.label :name, class: "dhh-label" %>
+      <%= f.text_field :name, required: true, placeholder: "Founder name", class: "dhh-input" %>
+    </div>
+    <div>
+      <%= f.label :company, class: "dhh-label" %>
+      <%= f.text_field :company, placeholder: "Startup name", class: "dhh-input" %>
+    </div>
+    <div>
+      <%= f.label :profile_url, "Profile URL", class: "dhh-label" %>
+      <%= f.url_field :profile_url, placeholder: placeholder_url, class: "dhh-input" %>
+    </div>
+    <div>
+      <%= f.label :hook, "Hook", class: "dhh-label" %>
+      <%= text_area_tag "contact[hook]", nil, rows: 3, placeholder: "Why this founder, why now", class: "dhh-input" %>
+    </div>
+    <%= f.submit "Add to queue", class: "dhh-btn dhh-btn-primary" %>
+  <% end %>
+</div>

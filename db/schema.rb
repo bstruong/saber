@@ -10,71 +10,59 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_054907) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_222711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "contact_methods", force: :cascade do |t|
+  create_table "contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "company"
     t.datetime "created_at", null: false
-    t.string "method_type", null: false
-    t.bigint "person_id", null: false
-    t.datetime "updated_at", null: false
-    t.string "value", null: false
-    t.index ["person_id"], name: "index_contact_methods_on_person_id"
-  end
-
-  create_table "important_dates", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "day", null: false
-    t.integer "month", null: false
+    t.string "email"
+    t.string "follow_up_frequency"
+    t.integer "goal_importance", default: 1, null: false
+    t.datetime "last_contacted_at"
     t.string "name", null: false
-    t.bigint "person_id", null: false
+    t.datetime "next_follow_up_due"
+    t.text "notes"
+    t.integer "objective_alignment", default: 1, null: false
+    t.integer "past_interaction_freq", default: 1, null: false
+    t.string "phone"
+    t.string "profile_url"
+    t.integer "ring_level", default: 1, null: false
+    t.string "soi_ring", default: "strangers", null: false
+    t.string "source", null: false
+    t.integer "total_score"
     t.datetime "updated_at", null: false
-    t.index ["person_id"], name: "index_important_dates_on_person_id"
+    t.integer "value_exchange", default: 1, null: false
+    t.index ["follow_up_frequency"], name: "index_contacts_on_follow_up_frequency"
+    t.index ["last_contacted_at"], name: "index_contacts_on_last_contacted_at"
+    t.index ["next_follow_up_due"], name: "index_contacts_on_next_follow_up_due"
+    t.index ["soi_ring"], name: "index_contacts_on_soi_ring"
+    t.index ["source"], name: "index_contacts_on_source"
   end
 
-  create_table "interactions", force: :cascade do |t|
+  create_table "interactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "ask_em_notes"
+    t.uuid "contact_id", null: false
     t.datetime "created_at", null: false
+    t.text "help_em_notes"
+    t.text "hook_em_notes"
     t.string "interaction_type", null: false
-    t.text "notes"
-    t.date "occurred_at", null: false
-    t.bigint "person_id", null: false
     t.datetime "updated_at", null: false
-    t.datetime "voided_at"
-    t.index ["person_id"], name: "index_interactions_on_person_id"
-    t.index ["voided_at"], name: "index_interactions_on_voided_at"
+    t.index ["contact_id"], name: "index_interactions_on_contact_id"
+    t.index ["interaction_type"], name: "index_interactions_on_interaction_type"
   end
 
-  create_table "people", force: :cascade do |t|
-    t.integer "cadence_days"
-    t.integer "cadence_override_days"
-    t.integer "connection_score"
+  create_table "sunday_checklists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "answered_no_reply_emails", default: false, null: false
+    t.boolean "cleared_social_dms", default: false, null: false
     t.datetime "created_at", null: false
-    t.string "cultural_tags", default: [], array: true
-    t.datetime "deleted_at"
-    t.integer "importance_score"
-    t.datetime "last_connected_at"
-    t.string "name", null: false
-    t.text "needs"
-    t.text "notes"
-    t.integer "reciprocity_score"
-    t.string "relationship_tags", default: [], array: true
-    t.string "ring", null: false
-    t.string "score_source", default: "computed", null: false
-    t.integer "shared_values_score"
+    t.boolean "followed_up_new_contacts", default: false, null: false
+    t.boolean "scheduled_ring1_coffee", default: false, null: false
+    t.boolean "sent_ring2_hellos", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["deleted_at"], name: "index_people_on_deleted_at"
-  end
-
-  create_table "reminders", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "dismissed_at"
-    t.date "due_at", null: false
-    t.bigint "person_id", null: false
-    t.string "reason", null: false
-    t.date "snoozed_until"
-    t.datetime "updated_at", null: false
-    t.index ["person_id"], name: "index_reminders_on_person_id"
+    t.date "week_of", null: false
+    t.index ["week_of"], name: "index_sunday_checklists_on_week_of", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -89,8 +77,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_054907) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "contact_methods", "people"
-  add_foreign_key "important_dates", "people"
-  add_foreign_key "interactions", "people"
-  add_foreign_key "reminders", "people"
+  add_foreign_key "interactions", "contacts"
 end

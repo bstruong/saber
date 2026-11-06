@@ -1,0 +1,125 @@
+<% content_for :title, @contact.name %>
+
+<p style="margin-bottom: 1rem;">
+  <%= link_to "← Contacts", contacts_path, class: "dhh-btn dhh-btn-plain" %>
+</p>
+
+<div class="dhh-split">
+  <section class="dhh-panel">
+    <div style="display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 0.75rem;">
+      <div>
+        <h1 class="dhh-h1"><%= @contact.name %></h1>
+        <p class="dhh-meta" style="margin-top: 0.35rem;">
+          <%= [@contact.company.presence, source_label(@contact.source)].compact.join(" · ") %>
+          <% if @contact.last_contacted_at.present? %>
+            · last contacted <%= @contact.last_contacted_at.to_date %>
+          <% else %>
+            · no outreach yet
+          <% end %>
+        </p>
+      </div>
+      <% if @contact.prospect? %>
+        <span class="dhh-tag">PROSPECT</span>
+      <% end %>
+    </div>
+
+    <p class="dhh-meta" style="margin-top: 0.75rem;">
+      <%= ring_label(@contact.soi_ring) %>
+      <% if @contact.email.present? %> · <%= @contact.email %><% end %>
+    </p>
+
+    <% if @contact.profile_url.present? %>
+      <p style="margin-top: 0.5rem;">
+        <%= link_to @contact.profile_url, @contact.profile_url, target: "_blank", rel: "noopener", style: "color: var(--color-link); font-size: 0.9375rem;" %>
+      </p>
+    <% end %>
+
+    <% if @contact.notes.present? %>
+      <p style="margin-top: 1rem; padding: 0.75rem; background: var(--color-wash); border-radius: 0.375rem; font-size: 0.9375rem;">
+        <%= @contact.notes %>
+      </p>
+    <% end %>
+
+    <hr class="dhh-rule">
+
+    <h2 class="dhh-h2">Scorecard</h2>
+    <p class="dhh-meta" style="margin: 0.35rem 0 1rem;">1–4 on each dimension. Total sets follow-up cadence.</p>
+
+    <%= form_with model: @contact, style: "display: grid; gap: 0.85rem;" do |f| %>
+      <div style="display: grid; gap: 0.85rem; grid-template-columns: 1fr 1fr;">
+        <% [
+          [:goal_importance, "Goal importance"],
+          [:ring_level, "Ring level"],
+          [:value_exchange, "Value exchange"],
+          [:past_interaction_freq, "Past interaction"],
+          [:objective_alignment, "Objective alignment"],
+          [:soi_ring, "SOI ring"]
+        ].each do |attr, label| %>
+          <div>
+            <%= f.label attr, label, class: "dhh-label" %>
+            <% if attr == :soi_ring %>
+              <%= f.select :soi_ring, Contact::SOI_RINGS.map { |r| [ring_label(r), r] }, {}, class: "dhh-input" %>
+            <% else %>
+              <%= f.select attr, (1..4).map { |n| [n, n] }, {}, class: "dhh-input" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <p class="dhh-meta">
+        <strong>Total</strong> <%= @contact.total_score %>/20 ·
+        <strong>Cadence</strong> <%= human_enum(@contact.follow_up_frequency) %> ·
+        <strong>Next</strong> <%= @contact.prospect? ? "First touch" : @contact.next_follow_up_due&.to_date %>
+      </p>
+
+      <%= f.submit "Save scorecard", class: "dhh-btn dhh-btn-secondary" %>
+    <% end %>
+  </section>
+
+  <section class="dhh-panel">
+    <h2 class="dhh-h2"><%= @contact.prospect? ? "First outreach" : "Log interaction" %></h2>
+    <p class="dhh-meta" style="margin: 0.35rem 0 1rem;">
+      Hook ’em, help ’em, ask ’em<% if @contact.prospect? %> — this clears them from the prospect queue<% end %>.
+    </p>
+
+    <%= form_with model: [@contact, @interaction], style: "display: grid; gap: 0.85rem;" do |f| %>
+      <div>
+        <%= f.label :interaction_type, "Type", class: "dhh-label" %>
+        <%= f.select :interaction_type, Interaction::TYPES.map { |t| [human_enum(t), t] }, {}, class: "dhh-input" %>
+      </div>
+      <div>
+        <%= f.label :hook_em_notes, "Hook ’em", class: "dhh-label" %>
+        <%= f.text_area :hook_em_notes, rows: 2, class: "dhh-input" %>
+      </div>
+      <div>
+        <%= f.label :help_em_notes, "Help ’em", class: "dhh-label" %>
+        <%= f.text_area :help_em_notes, rows: 2, class: "dhh-input" %>
+      </div>
+      <div>
+        <%= f.label :ask_em_notes, "Ask ’em", class: "dhh-label" %>
+        <%= f.text_area :ask_em_notes, rows: 2, class: "dhh-input" %>
+      </div>
+      <%= f.submit @contact.prospect? ? "Save outreach" : "Save interaction", class: "dhh-btn dhh-btn-primary" %>
+    <% end %>
+
+    <hr class="dhh-rule">
+
+    <h2 class="dhh-h2">History</h2>
+    <% if @interactions.any? %>
+      <div class="dhh-list" style="margin-top: 0.75rem;">
+        <% @interactions.each do |interaction| %>
+          <div class="dhh-list-item" style="display: block;">
+            <div style="font-weight: 600;"><%= human_enum(interaction.interaction_type) %> · <%= interaction.created_at.to_date %></div>
+            <div class="dhh-meta" style="margin-top: 0.25rem;">
+              Hook: <%= interaction.hook_em_notes.presence || "—" %> ·
+              Help: <%= interaction.help_em_notes.presence || "—" %> ·
+              Ask: <%= interaction.ask_em_notes.presence || "—" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="dhh-meta" style="margin-top: 0.75rem;">No interactions yet.</p>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,36 @@
+<%= form_with model: contact, class: "dhh-panel", style: "max-width: 28rem; display: grid; gap: 0.85rem;" do |f| %>
+  <% if contact.errors.any? %>
+    <div class="dhh-flash dhh-flash-alert"><%= contact.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <% [
+    [:name, :text_field, "Name"],
+    [:email, :email_field, "Email"],
+    [:phone, :telephone_field, "Phone"],
+    [:company, :text_field, "Company"],
+    [:profile_url, :url_field, "Profile URL"]
+  ].each do |attr, helper, label| %>
+    <div>
+      <%= f.label attr, label, class: "dhh-label" %>
+      <%= f.public_send helper, attr, class: "dhh-input" %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :source, class: "dhh-label" %>
+    <%= f.select :source, Contact::SOURCES.map { |s| [source_label(s), s] }, {}, class: "dhh-input" %>
+  </div>
+  <div>
+    <%= f.label :soi_ring, "SOI ring", class: "dhh-label" %>
+    <%= f.select :soi_ring, Contact::SOI_RINGS.map { |r| [ring_label(r), r] }, {}, class: "dhh-input" %>
+  </div>
+  <div>
+    <%= f.label :notes, class: "dhh-label" %>
+    <%= f.text_area :notes, rows: 3, class: "dhh-input" %>
+  </div>
+
+  <div style="display: flex; gap: 0.5rem; padding-top: 0.25rem;">
+    <%= f.submit class: "dhh-btn dhh-btn-primary" %>
+    <%= link_to "Cancel", contacts_path, class: "dhh-btn dhh-btn-secondary" %>
+  </div>
+<% end %>

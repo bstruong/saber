@@ -1,0 +1,26 @@
+<% content_for :title, "Sign in" %>
+
+<div style="max-width: 24rem; margin: 4rem auto 0;">
+  <h1 class="dhh-h1">Ikigai</h1>
+  <p class="dhh-lede" style="margin-top: 0.5rem;">Sign in to your account.</p>
+
+  <div class="dhh-panel" style="margin-top: 1.5rem;">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { style: "display: grid; gap: 1rem;" }) do |f| %>
+      <div>
+        <%= f.label :email, class: "dhh-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "dhh-input" %>
+      </div>
+      <div>
+        <%= f.label :password, class: "dhh-label" %>
+        <%= f.password_field :password, autocomplete: "current-password", class: "dhh-input" %>
+      </div>
+      <% if devise_mapping.rememberable? %>
+        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem;">
+          <%= f.check_box :remember_me %>
+          Remember me
+        </label>
+      <% end %>
+      <%= f.submit "Sign in", class: "dhh-btn dhh-btn-primary", style: "width: 100%;" %>
+    <% end %>
+  </div>
+</div>

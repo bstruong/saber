@@ -2,33 +2,18 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   devise_for :users,
-    path:        "api/users",
-    path_names:  { sign_in: "sign_in", sign_out: "sign_out" },
-    defaults:    { format: :json },
     skip:        [ :registrations, :passwords ],
-    controllers: { sessions: "api/sessions" }
+    controllers: { sessions: "users/sessions" }
 
-  namespace :api do
-    get "users/me", to: "users#me"
+  authenticate :user do
+    root "dashboard#show"
 
-    resources :people, only: [ :index, :show, :create, :update, :destroy ] do
-      resources :contact_methods, only: [ :create, :destroy ]
-      resources :important_dates, only: [ :create, :destroy ]
-      resources :interactions,    only: [ :index, :show, :create ] do
-        member do
-          post :void
-        end
-      end
+    get "prospecting", to: "prospecting#show", as: :prospecting
+
+    resources :contacts do
+      resources :interactions, only: [ :create ]
     end
 
-    resources :reminders, only: [] do
-      member do
-        post :dismiss
-        post :snooze
-      end
-    end
-
-    get "dashboard/reconnect", to: "dashboard#reconnect"
-    get "dashboard/upcoming",  to: "dashboard#upcoming"
+    resource :sunday_checklist, only: [ :update ]
   end
 end

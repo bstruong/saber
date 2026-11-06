@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: saber-postgres
+    container_name: ikigai-postgres
     ports:
       - "5433:5432"
     environment:

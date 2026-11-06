@@ -1,7 +1,9 @@
 FactoryBot.define do
   factory :interaction do
-    association :person
-    interaction_type { :coffee }
-    occurred_at      { Date.today }
+    contact
+    interaction_type { "dm" }
+    hook_em_notes { "Saw a post" }
+    help_em_notes { "Shared a note" }
+    ask_em_notes { "Asked for a call" }
   end
 end

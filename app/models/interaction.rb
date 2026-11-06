@@ -1,19 +1,16 @@
 class Interaction < ApplicationRecord
-  belongs_to :person
+  TYPES = %w[
+    dm
+    cold_email
+    cold_call
+    audit_call_15min
+    meetup_chat
+    sunday_checkin
+  ].freeze
 
-  scope :active, -> { where(voided_at: nil) }
-  scope :voided, -> { where.not(voided_at: nil) }
+  belongs_to :contact
 
-  enum :interaction_type, {
-    coffee: "coffee",
-    lunch:  "lunch",
-    text:   "text",
-    call:   "call",
-    email:  "email",
-    event:  "event",
-    other:  "other"
-  }
+  enum :interaction_type, TYPES.index_by(&:itself), validate: true
 
   validates :interaction_type, presence: true
-  validates :occurred_at,      presence: true
 end
